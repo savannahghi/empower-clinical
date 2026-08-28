@@ -1,0 +1,16 @@
+all: false
+dir: '{{.InterfaceDir}}/mock'
+force-file-write: true
+formatter: goimports
+log-level: info
+recursive: true
+require-template-schema-exists: true
+template: testify
+template-schema: '{{.Template}}.schema.json'
+packages:
+  github.com/savannahghi/empower-clinical/pkg:
+    config:
+      all: true
+      filename: '{{base .InterfaceDir}}_mockery.go'
+      structname: 'Mock{{.InterfaceName}}'
+      pkgname: 'mock'

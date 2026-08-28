@@ -1,0 +1,93 @@
+schema:
+  - pkg/clinical/presentation/graph/*.graphql
+  
+exec:
+  filename: pkg/clinical/presentation/graph/generated/generated.go
+  package: generated
+
+federation:
+  filename: pkg/clinical/presentation/graph/generated/federation.go
+  package: generated
+  version: 2
+
+model:
+  filename: pkg/clinical/domain/model/models_gen.go
+  package: model
+
+resolver:
+  layout: follow-schema
+  package: graph
+  dir: pkg/clinical/presentation/graph
+
+autobind:
+  - "github.com/savannahghi/empower-clinical/pkg/clinical/application/dto"
+  - "github.com/savannahghi/scalarutils"
+  - "github.com/savannahghi/enumutils"
+  - "github.com/savannahghi/firebasetools"
+  - "github.com/savannahghi/empower-clinical/pkg/clinical/domain"
+  - "github.com/savannahghi/empower-clinical/pkg/clinical/presentation/graph"
+  - "github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/openconceptlab"
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  PatchPatientInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.PatientInput
+  CodingInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.Coding
+  AttachmentInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.Attachment
+  QuantityInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.Quantity
+  QuestionnaireResponseInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.QuestionnaireResponse
+  QuestionnaireResponseItemAnswerInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.QuestionnaireResponseItemAnswer
+  QuestionnaireResponseItemInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.QuestionnaireResponseItem
+  ReferenceInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.Reference
+  MediaInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.Media
+  Date:
+    model:
+      - "github.com/savannahghi/scalarutils.Date"
+  MetaInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.MetaInput
+  AdvantageHeadersInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.AdvantageHeaders
+  PaginationInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.Pagination
+  Pagination:
+    model:
+      - github.com/savannahghi/serverutils.PaginationInput
+  PaginationResponse:
+    model:
+      - github.com/savannahghi/serverutils.PageInfo
+  DosageInstructionInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.DosageInstruction
+  ValueSetDataInput:
+    model:
+      - github.com/savannahghi/empower-clinical/pkg/clinical/application/dto.ValueSetData

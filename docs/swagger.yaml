@@ -1,0 +1,4840 @@
+consumes:
+- application/x-www-form-urlencoded
+definitions:
+  domain.ConsentDecisionEnum:
+    enum:
+    - deny
+    - permit
+    type: string
+    x-enum-varnames:
+    - ConsentDecisionDeny
+    - ConsentDecisionPermit
+  domain.ConsentStatusEnum:
+    enum:
+    - active
+    - inactive
+    type: string
+    x-enum-varnames:
+    - ConsentStatusActive
+    - ConsentStatusInactive
+  domain.MedicalHistory:
+    properties:
+      medication:
+        type: string
+      procedure:
+        type: string
+      tests:
+        items:
+          $ref: '#/definitions/domain.Test'
+        type: array
+    type: object
+  domain.MedicationRequestStatus:
+    enum:
+    - active
+    - completed
+    - stopped
+    - cancelled
+    - on_hold
+    type: string
+    x-enum-varnames:
+    - ActiveMedicationStatus
+    - CompletedMedicationStatus
+    - StoppedMedicationStatus
+    - CancelledMedicationStatus
+    - OnHoldMedicationStatus
+  domain.PatientReferralDetails:
+    properties:
+      medicalHistory:
+        $ref: '#/definitions/domain.MedicalHistory'
+      patientName:
+        type: string
+      receivingFacility:
+        $ref: '#/definitions/domain.ReceivingFacility'
+      referralReason:
+        $ref: '#/definitions/domain.ReferralReason'
+      referralReportLink:
+        type: string
+    type: object
+  domain.QuestionnaireResponseStatusEnum:
+    enum:
+    - completed
+    type: string
+    x-enum-varnames:
+    - QuestionnaireResponseStatusEnumCompleted
+  domain.Questions:
+    properties:
+      answer:
+        type: string
+      childQuestions:
+        description: This will be used to hold nested questions
+        items:
+          $ref: '#/definitions/domain.Questions'
+        type: array
+      question:
+        type: string
+    type: object
+  domain.ReceivingFacility:
+    properties:
+      facilityContact:
+        type: string
+      facilityCounty:
+        type: string
+      facilityEmail:
+        type: string
+      facilityName:
+        type: string
+    type: object
+  domain.ReferralReason:
+    properties:
+      date:
+        type: string
+      note:
+        type: string
+      reason:
+        type: string
+      test:
+        type: string
+    type: object
+  domain.SimpleQuestionnaireResponse:
+    properties:
+      group:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/domain.Questions'
+        type: array
+    type: object
+  domain.Test:
+    properties:
+      date:
+        type: string
+      name:
+        type: string
+      results:
+        type: string
+    type: object
+  domain.UnitsOfTimeEnum:
+    enum:
+    - s
+    - min
+    - h
+    - d
+    - wk
+    - mo
+    - a
+    type: string
+    x-enum-varnames:
+    - UnitsOfTimeEnumS
+    - UnitsOfTimeEnumMin
+    - UnitsOfTimeEnumH
+    - UnitsOfTimeEnumD
+    - UnitsOfTimeEnumWk
+    - UnitsOfTimeEnumMo
+    - UnitsOfTimeEnumA
+  dto.AdvantageHeaders:
+    properties:
+      branch:
+        type: string
+      cluster:
+        type: string
+      department:
+        type: string
+      organisation:
+        type: string
+      variant:
+        type: string
+      workstation:
+        type: string
+    type: object
+  dto.Allergy:
+    properties:
+      ID:
+        type: string
+      code:
+        type: string
+      encounterID:
+        type: string
+      name:
+        type: string
+      onsetDateTime:
+        type: string
+      patientID:
+        type: string
+      reaction:
+        $ref: '#/definitions/dto.Reaction'
+      system:
+        type: string
+      terminologySource:
+        type: string
+    type: object
+  dto.AllergyConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.AllergyEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.AllergyEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.Allergy'
+    type: object
+  dto.AllergyInput:
+    properties:
+      code:
+        type: string
+      encounterID:
+        type: string
+      patientID:
+        type: string
+      reaction:
+        $ref: '#/definitions/dto.ReactionInput'
+      terminologySource:
+        type: string
+    required:
+    - code
+    - encounterID
+    - terminologySource
+    type: object
+  dto.Annotation:
+    properties:
+      authorReference:
+        type: string
+      authorString:
+        type: string
+      id:
+        type: string
+      text:
+        type: string
+      time:
+        type: string
+    type: object
+  dto.Attachment:
+    properties:
+      contentType:
+        type: string
+      creation:
+        type: string
+      data:
+        type: string
+      hash:
+        type: string
+      id:
+        type: string
+      language:
+        type: string
+      size:
+        type: integer
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.AttachmentResponse:
+    properties:
+      attachment:
+        $ref: '#/definitions/dto.Attachment'
+      type:
+        type: string
+    type: object
+  dto.BusinessHoursInput:
+    properties:
+      closingTime:
+        type: string
+      day:
+        $ref: '#/definitions/dto.DayOfWeek'
+      openingTime:
+        type: string
+    type: object
+  dto.CodeableConcept:
+    properties:
+      coding:
+        items:
+          $ref: '#/definitions/dto.Coding'
+        type: array
+      id:
+        type: string
+      text:
+        type: string
+    type: object
+  dto.Coding:
+    properties:
+      code:
+        type: string
+      display:
+        type: string
+      id:
+        type: string
+      system:
+        type: string
+      userSelected:
+        type: boolean
+      version:
+        type: string
+    type: object
+  dto.Composition:
+    properties:
+      author:
+        type: string
+      category:
+        $ref: '#/definitions/dto.CompositionCategory'
+      date:
+        type: string
+      encounterID:
+        type: string
+      id:
+        type: string
+      patientID:
+        type: string
+      section:
+        items:
+          $ref: '#/definitions/dto.Section'
+        type: array
+      status:
+        $ref: '#/definitions/dto.CompositionStatusEnum'
+      text:
+        type: string
+      type:
+        $ref: '#/definitions/dto.CompositionType'
+    type: object
+  dto.CompositionCategory:
+    enum:
+    - ASSESSMENT_PLAN
+    - HISTORY_OF_PRESENTING_ILLNESS
+    - SOCIAL_HISTORY
+    - FAMILY_HISTORY
+    - EXAMINATION
+    - PLAN_OF_CARE
+    - PROGRESS_NOTE
+    - PAST_MEDICAL_SURGERY_HISTORY
+    - CHIEF_COMPLAINT
+    type: string
+    x-enum-varnames:
+    - AssessmentAndPlan
+    - HistoryOfPresentingIllness
+    - SocialHistory
+    - FamilyHistory
+    - Examination
+    - PlanOfCare
+    - ProviderUnspecifiedProgressNote
+    - PastMedicalSurgeryHistory
+    - ChiefComplaint
+  dto.CompositionConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.CompositionEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.CompositionEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.Composition'
+    type: object
+  dto.CompositionInput:
+    properties:
+      category:
+        $ref: '#/definitions/dto.CompositionCategory'
+      encounterID:
+        type: string
+      note:
+        type: string
+      status:
+        $ref: '#/definitions/dto.CompositionStatusEnum'
+      type:
+        $ref: '#/definitions/dto.CompositionType'
+    type: object
+  dto.CompositionStatusEnum:
+    enum:
+    - PRELIMINARY
+    - FINAL
+    - AMENDED
+    - ENTERED_IN_ERROR
+    type: string
+    x-enum-varnames:
+    - CompositionStatusEnumPreliminary
+    - CompositionStatusEnumFinal
+    - CompositionStatusEnumAmended
+    - CompositionStatusEnumEnteredInErrorPreliminary
+  dto.CompositionType:
+    enum:
+    - PROGRESS_NOTE
+    type: string
+    x-enum-varnames:
+    - ProgressNote
+  dto.Condition:
+    properties:
+      category:
+        allOf:
+        - $ref: '#/definitions/dto.ConditionCategory'
+        example: ""
+      code:
+        example: 2A21
+        type: string
+      condition:
+        example: Mastocytosis
+        type: string
+      encounterID:
+        example: 640bd94d-51ad-4eee-b496-bb0fb4b87d38
+        type: string
+      id:
+        example: 10414684-7ec5-4ad2-9aa6-31e35c51e5bb
+        type: string
+      note:
+        example: An example note
+        type: string
+      oncologyCondition:
+        $ref: '#/definitions/dto.OncologyConditionOutput'
+      onsetDate:
+        example: "2025-03-12"
+        type: string
+      patientID:
+        example: 5f4a922d-abcd-405a-11cc-a88451195bfe
+        type: string
+      recordedDate:
+        example: "2025-04-03"
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/dto.ConditionStatus'
+        example: ACTIVE
+      system:
+        example: http://id.who.int/icd/release/11/mms
+        type: string
+    type: object
+  dto.ConditionCategory:
+    enum:
+    - PROBLEM_LIST_ITEM
+    - ENCOUNTER_DIAGNOSIS
+    type: string
+    x-enum-varnames:
+    - ConditionCategoryProblemList
+    - ConditionCategoryDiagnosis
+  dto.ConditionConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.ConditionEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.ConditionEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.Condition'
+    type: object
+  dto.ConditionInput:
+    properties:
+      category:
+        allOf:
+        - $ref: '#/definitions/dto.ConditionCategory'
+        example: PROBLEM_LIST_ITEM
+      code:
+        example: 2A21
+        type: string
+      encounterID:
+        example: 59260d90-80f4-4dc3-ae3a-c7d06c63b1b5
+        type: string
+      name:
+        example: Mastocytosis
+        type: string
+      note:
+        example: this is test condition
+        type: string
+      onsetDate:
+        example: "2025-04-13"
+        type: string
+      severity:
+        allOf:
+        - $ref: '#/definitions/dto.ConditionSeverity'
+        example: severe
+      status:
+        allOf:
+        - $ref: '#/definitions/dto.ConditionStatus'
+        example: ACTIVE
+      system:
+        allOf:
+        - $ref: '#/definitions/domain.TerminologySource'
+        example: LOINC
+    type: object
+  dto.ConditionSeverity:
+    enum:
+    - severe
+    - mild
+    - moderate
+    type: string
+    x-enum-varnames:
+    - ConditionSeveritySevere
+    - ConditionSeverityMild
+    - ConditionSeverityModerate
+  dto.ConditionStatus:
+    enum:
+    - ACTIVE
+    - INACTIVE
+    - RESOLVED
+    - UNKNOWN
+    type: string
+    x-enum-varnames:
+    - ConditionStatusActive
+    - ConditionStatusInactive
+    - ConditionStatusResolved
+    - ConditionStatusUnknown
+  dto.Consent:
+    properties:
+      dateTime:
+        type: string
+      decision:
+        $ref: '#/definitions/domain.ConsentDecisionEnum'
+      id:
+        type: string
+      patient:
+        $ref: '#/definitions/dto.Reference'
+      status:
+        $ref: '#/definitions/domain.ConsentStatusEnum'
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+    type: object
+  dto.ConsentInput:
+    properties:
+      decision:
+        $ref: '#/definitions/domain.ConsentDecisionEnum'
+      denyReason:
+        type: string
+      encounterID:
+        type: string
+      screeningType:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+    type: object
+  dto.ConsentOutput:
+    properties:
+      status:
+        $ref: '#/definitions/domain.ConsentStatusEnum'
+    type: object
+  dto.ContactInput:
+    properties:
+      type:
+        $ref: '#/definitions/dto.ContactType'
+      value:
+        type: string
+    type: object
+  dto.ContactType:
+    enum:
+    - PHONE_NUMBER
+    type: string
+    x-enum-varnames:
+    - ContactTypePhoneNumber
+  dto.CoordinatesInput:
+    properties:
+      lat:
+        type: string
+      lng:
+        type: string
+    type: object
+  dto.Country:
+    enum:
+    - KE
+    type: string
+    x-enum-varnames:
+    - CountryKenya
+  dto.CreateReferralInput:
+    properties:
+      clinicalHistory:
+        type: string
+      conditionID:
+        description: |-
+          This field will be used to hold the diagnosis, since it will be created as a
+          condition in FHIR
+        type: string
+      encounterID:
+        type: string
+      referralDate:
+        type: string
+      referralType:
+        type: string
+      referredFrom:
+        $ref: '#/definitions/dto.ReferralFacility'
+      referredTo:
+        $ref: '#/definitions/dto.ReferralFacility'
+      specialist:
+        type: string
+      tests:
+        description: Empower related fields
+        items:
+          type: string
+        type: array
+      urgency:
+        type: string
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+    type: object
+  dto.DayOfWeek:
+    enum:
+    - MONDAY
+    - TUESDAY
+    - WEDNESDAY
+    - THURSDAY
+    - FRIDAY
+    - SATURDAY
+    - SUNDAY
+    type: string
+    x-enum-varnames:
+    - DayOfWeekMonday
+    - DayOfWeekTuesday
+    - DayOfWeekWednesday
+    - DayOfWeekThursday
+    - DayOfWeekFriday
+    - DayOfWeekSaturday
+    - DayOfWeekSunday
+  dto.DiagnosticReport:
+    properties:
+      conclusion:
+        type: string
+      encounterID:
+        type: string
+      id:
+        type: string
+      issued:
+        type: string
+      media:
+        items:
+          $ref: '#/definitions/dto.Media'
+        type: array
+      patientID:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+      status:
+        $ref: '#/definitions/dto.ObservationStatus'
+    type: object
+  dto.DiagnosticReportInput:
+    properties:
+      encounterID:
+        type: string
+      findings:
+        type: string
+      media:
+        items:
+          $ref: '#/definitions/dto.Media'
+        type: array
+      note:
+        type: string
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+    required:
+    - encounterID
+    type: object
+  dto.DosageInstruction:
+    properties:
+      additionalInstruction:
+        items:
+          type: string
+        type: array
+      asNeeded:
+        type: boolean
+      condition:
+        type: string
+      doseQuantity:
+        type: number
+      doseUnit:
+        type: string
+      duration:
+        type: string
+      durationUnit:
+        $ref: '#/definitions/domain.UnitsOfTimeEnum'
+      endDate:
+        type: string
+      freeTextInstruction:
+        description: Free text dosage instructions can be used for cases where the
+          instructions are too complex to code.
+        type: string
+      frequency:
+        type: integer
+      patientInstruction:
+        type: string
+      period:
+        type: string
+      periodUnit:
+        $ref: '#/definitions/domain.UnitsOfTimeEnum'
+      route:
+        $ref: '#/definitions/dto.ValueSetData'
+      startDate:
+        type: string
+    type: object
+  dto.Encounter:
+    properties:
+      class:
+        items:
+          $ref: '#/definitions/dto.EncounterClass'
+        type: array
+      episodeOfCareID:
+        type: string
+      id:
+        type: string
+      patientID:
+        type: string
+      status:
+        $ref: '#/definitions/dto.EncounterStatusEnum'
+    type: object
+  dto.EncounterClass:
+    properties:
+      code:
+        type: string
+      display:
+        $ref: '#/definitions/dto.EncounterClassEnum'
+    type: object
+  dto.EncounterClassEnum:
+    enum:
+    - AMBULATORY
+    type: string
+    x-enum-varnames:
+    - EncounterClassEnumAmbulatory
+  dto.EncounterConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.EncounterEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.EncounterEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.Encounter'
+    type: object
+  dto.EncounterInput:
+    properties:
+      status:
+        $ref: '#/definitions/dto.EncounterStatusEnum'
+    required:
+    - status
+    type: object
+  dto.EncounterStatusEnum:
+    enum:
+    - PLANNED
+    - ON_HOLD
+    - IN_PROGRESS
+    - COMPLETED
+    - CANCELLED
+    - DISCONTINUED
+    type: string
+    x-enum-varnames:
+    - EncounterStatusEnumPlanned
+    - EncounterStatusEnumOnHold
+    - EncounterStatusEnumInProgress
+    - EncounterStatusEnumCompleted
+    - EncounterStatusEnumCancelled
+    - EncounterStatusEnumDiscontinued
+  dto.EpisodeOfCare:
+    properties:
+      id:
+        type: string
+      patientID:
+        type: string
+      status:
+        $ref: '#/definitions/dto.EpisodeOfCareStatusEnum'
+    type: object
+  dto.EpisodeOfCareInput:
+    properties:
+      patientID:
+        type: string
+      status:
+        $ref: '#/definitions/dto.EpisodeOfCareStatusEnum'
+    required:
+    - patientID
+    - status
+    type: object
+  dto.EpisodeOfCareStatusEnum:
+    enum:
+    - PLANNED
+    - ACTIVE
+    - FINISHED
+    - CANCELLED
+    - ENTERED_IN_ERROR
+    type: string
+    x-enum-varnames:
+    - EpisodeOfCareStatusEnumPlanned
+    - EpisodeOfCareStatusEnumActive
+    - EpisodeOfCareStatusEnumFinished
+    - EpisodeOfCareStatusEnumCancelled
+    - EpisodeOfCareStatusEnumEnteredInError
+  dto.FacilityIdentifierInput:
+    properties:
+      facilityID:
+        type: string
+      type:
+        $ref: '#/definitions/dto.FacilityIdentifierType'
+      value:
+        type: string
+    type: object
+  dto.FacilityIdentifierType:
+    enum:
+    - MFL_CODE
+    - HEALTH_CRM
+    - SLADE_CODE
+    type: string
+    x-enum-varnames:
+    - FacilityIdentifierTypeMFLCode
+    - FacilityIdentifierTypeHealthCRM
+    - FacilityIdentifierTypeSladeCode
+  dto.FacilityInput:
+    properties:
+      active:
+        type: boolean
+      address:
+        type: string
+      businessHours:
+        items:
+          $ref: '#/definitions/dto.BusinessHoursInput'
+        type: array
+      contact:
+        type: string
+      coordinates:
+        $ref: '#/definitions/dto.CoordinatesInput'
+      country:
+        $ref: '#/definitions/dto.Country'
+      county:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      fhirOrganisationID:
+        type: string
+      identifier:
+        $ref: '#/definitions/dto.FacilityIdentifierInput'
+      name:
+        type: string
+      phone:
+        type: string
+      services:
+        items:
+          $ref: '#/definitions/dto.FacilityServiceInput'
+        type: array
+    type: object
+  dto.FacilityServiceInput:
+    properties:
+      description:
+        type: string
+      identifiers:
+        items:
+          $ref: '#/definitions/dto.ServiceIdentifierInput'
+        type: array
+      name:
+        type: string
+    type: object
+  dto.Gender:
+    enum:
+    - male
+    - female
+    - other
+    type: string
+    x-enum-varnames:
+    - GenderMale
+    - GenderFemale
+    - GenderOther
+  dto.Identifier:
+    properties:
+      assigner:
+        $ref: '#/definitions/dto.Reference'
+      id:
+        type: string
+      period:
+        $ref: '#/definitions/dto.Period'
+      system:
+        type: string
+      type:
+        $ref: '#/definitions/dto.CodeableConcept'
+      use:
+        type: string
+      value:
+        type: string
+    type: object
+  dto.IdentifierInput:
+    properties:
+      type:
+        $ref: '#/definitions/dto.IdentifierType'
+      value:
+        type: string
+    type: object
+  dto.IdentifierType:
+    enum:
+    - national_id
+    - passport_number
+    - alien_id
+    - ccc_number
+    - slade_health_id
+    type: string
+    x-enum-varnames:
+    - IdentifierTypeNationalID
+    - IdentifierTypePassport
+    - IdentifierTypeAlienID
+    - IdentifierTypeCCCNumber
+    - IdentifierTypeHealthID
+  dto.LabTestTypeEnum:
+    enum:
+    - MAMMOGRAM
+    - BIOPSY
+    - MRI
+    - ULTRASOUND
+    - CBE
+    - PAPSMEAR
+    - WHOLE_BLOOD
+    - PROSTATIC_SERUM_ANTIGEN
+    type: string
+    x-enum-varnames:
+    - MamomgramTest
+    - BiopsyTest
+    - MRITest
+    - UltrasoundTest
+    - CBETest
+    - PapSmearTest
+    - WholeBloodTest
+    - ProstaticSerumAntigenTest
+  dto.Media:
+    properties:
+      contentType:
+        type: string
+      id:
+        type: string
+      mediaLink:
+        type: string
+      name:
+        type: string
+      patientID:
+        type: string
+      patientName:
+        type: string
+      signedURL:
+        type: string
+    type: object
+  dto.MediaConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.MediaEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.MediaEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.Media'
+    type: object
+  dto.MedicalData:
+    properties:
+      allergies:
+        items:
+          $ref: '#/definitions/dto.Allergy'
+        type: array
+      bmi:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+      cd4Count:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+      regimen:
+        items:
+          $ref: '#/definitions/dto.MedicationStatement'
+        type: array
+      viralLoad:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+      weight:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+    type: object
+  dto.Medication:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.MedicationOutput:
+    properties:
+      doseForm:
+        $ref: '#/definitions/dto.ValueSetData'
+      expiryDate:
+        type: string
+      id:
+        type: string
+      lotNumber:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.MedicationRequestConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.MedicationRequestEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.MedicationRequestEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.MedicationRequestOutput'
+    type: object
+  dto.MedicationRequestOutput:
+    properties:
+      authoredOn:
+        type: string
+      diagnosis:
+        type: string
+      dosageInstructions:
+        items:
+          $ref: '#/definitions/dto.DosageInstruction'
+        type: array
+      encounterID:
+        type: string
+      facilityName:
+        type: string
+      id:
+        type: string
+      medication:
+        type: string
+      notes:
+        items:
+          $ref: '#/definitions/dto.Annotation'
+        type: array
+      orderedBy:
+        type: string
+      priority:
+        type: string
+      status:
+        $ref: '#/definitions/domain.MedicationRequestStatus'
+      subject:
+        $ref: '#/definitions/dto.Reference'
+    type: object
+  dto.MedicationRequestPriority:
+    enum:
+    - routine
+    - urgent
+    - asap
+    - stat
+    type: string
+    x-enum-varnames:
+    - MedicationRequestPriorityRoutine
+    - MedicationRequestPriorityUrgent
+    - MedicationRequestPriorityAsap
+    - MedicationRequestPriorityStat
+  dto.MedicationStatement:
+    properties:
+      id:
+        type: string
+      medication:
+        $ref: '#/definitions/dto.Medication'
+      patientID:
+        type: string
+      status:
+        $ref: '#/definitions/dto.MedicationStatementStatusEnum'
+    type: object
+  dto.MedicationStatementStatusEnum:
+    enum:
+    - ACTIVE
+    - INACTIVE
+    - UNKNOWN
+    - RECURRENCE
+    - RELAPSE
+    - REMISSSION
+    type: string
+    x-enum-varnames:
+    - MedicationStatementStatusEnumActive
+    - MedicationStatementStatusEnumInActive
+    - MedicationStatementStatusEnumUnknown
+    - MedicationStatementStatusEnumRecurrence
+    - MedicationStatementStatusEnumRelapse
+    - MedicationStatementStatusEnumRemission
+  dto.MetaInput:
+    properties:
+      lastUpdated:
+        type: string
+      profile:
+        type: string
+      security:
+        items:
+          $ref: '#/definitions/dto.Coding'
+        type: array
+      source:
+        type: string
+      tag:
+        items:
+          $ref: '#/definitions/dto.Coding'
+        type: array
+      versionId:
+        type: string
+    type: object
+  dto.Observation:
+    properties:
+      category:
+        type: string
+      code:
+        type: string
+      encounterID:
+        type: string
+      id:
+        type: string
+      interpretation:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      note:
+        type: string
+      patientID:
+        type: string
+      patientName:
+        type: string
+      serviceRequestID:
+        type: string
+      status:
+        $ref: '#/definitions/dto.ObservationStatus'
+      timeRecorded:
+        type: string
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+      value:
+        type: string
+    type: object
+  dto.ObservationConceptEnum:
+    enum:
+    - TEMPERATURE
+    - HEIGHT
+    - WEIGHT
+    - RESPIRATORY_RATE
+    - PULSE_RATE
+    - BLOOD_PRESSURE
+    - BMI
+    - VIRAL_LOAD
+    - MUAC
+    - OXYGEN_SATURATION
+    - BLOOD_SUGAR
+    - LAST_MENSTRUAL_PERIOD
+    - DIASTOLIC_BLOOD_PRESSURE
+    - COLPOSCOPY
+    - VIA
+    - IMMUNO_HISTO_CHEMISTRY
+    - POST_COITAL_BLEEDING
+    - HISTORY_OF_PRESENTING_ILLNESS
+    - PAST_MEDICAL_AND_SURGICAL_HISTORY
+    - FAMILY_AND_SOCIAL_HISTORY
+    - HPV
+    type: string
+    x-enum-varnames:
+    - ObservationConceptEnumTemperature
+    - ObservationConceptEnumHeight
+    - ObservationConceptEnumWeight
+    - ObservationConceptEnumRespiratoryRate
+    - ObservationConceptEnumPulseRate
+    - ObservationConceptEnumBloodPressure
+    - ObservationConceptEnumBMI
+    - ObservationConceptEnumViralLoad
+    - ObservationConceptEnumMUAC
+    - ObservationConceptEnumOxygenSaturation
+    - ObservationConceptEnumBloodSugar
+    - ObservationConceptEnumLastMenstrualPeriod
+    - ObservationConceptEnumDiastolicBloodPressure
+    - ObservationConceptEnumColposcopy
+    - ObservationConceptEnumVIA
+    - ObservationConceptEnumImmunoHistoChemistry
+    - ObservationConceptEnumPostCoitalBleeding
+    - ObservationConceptEnumHistoryOfPresentingIllnesses
+    - ObservationConceptEnumPastMedicalSurgicalHistory
+    - ObservationConceptEnumFamilySocialHistory
+    - ObservationConceptEnumHPV
+  dto.ObservationConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.ObservationEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.ObservationEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.Observation'
+    type: object
+  dto.ObservationInput:
+    properties:
+      concept:
+        $ref: '#/definitions/dto.ObservationConceptEnum'
+      encounterID:
+        type: string
+      note:
+        type: string
+      observationSubtype:
+        $ref: '#/definitions/dto.ObservationSubtype'
+      status:
+        $ref: '#/definitions/dto.ObservationStatus'
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+      value:
+        type: string
+    required:
+    - encounterID
+    - status
+    type: object
+  dto.ObservationOutput:
+    properties:
+      examinations:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+      referredTests:
+        items:
+          $ref: '#/definitions/dto.ReferralDetail'
+        type: array
+      tests:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+    type: object
+  dto.ObservationStatus:
+    enum:
+    - FINAL
+    - CANCELLED
+    type: string
+    x-enum-varnames:
+    - ObservationStatusFinal
+    - ObservationStatusCancelled
+  dto.ObservationSubtype:
+    enum:
+    - HPV_PCR_DNA
+    - HPV_ONCOPROTEIN
+    type: string
+    x-enum-varnames:
+    - HPV_PCR_DNA
+    - HPV_ONCOPROTEIN
+  dto.OncologyConditionOutput:
+    properties:
+      ICDO3MorphologyCode:
+        type: string
+      ICDO3PrimaryTumorCode:
+        type: string
+      stage:
+        type: string
+    type: object
+  dto.OncologyDiagnosisInput:
+    properties:
+      ICDO3MorphologyCode:
+        type: string
+      ICDO3PrimaryTumorCode:
+        type: string
+      behavior:
+        $ref: '#/definitions/dto.ValueSetData'
+      condition:
+        $ref: '#/definitions/dto.ValueSetData'
+      encounterId:
+        type: string
+      grade:
+        $ref: '#/definitions/dto.ValueSetData'
+      notes:
+        type: string
+      stage:
+        $ref: '#/definitions/dto.ValueSetData'
+    required:
+    - ICDO3MorphologyCode
+    - ICDO3PrimaryTumorCode
+    - behavior
+    - condition
+    - encounterId
+    - grade
+    - notes
+    - stage
+    type: object
+  dto.PageInfo:
+    properties:
+      endCursor:
+        type: string
+      hasNextPage:
+        description: Forward pagination
+        type: boolean
+      hasPreviousPage:
+        description: Backward pagination
+        type: boolean
+      startCursor:
+        type: string
+    type: object
+  dto.PatchCompositionInput:
+    properties:
+      category:
+        $ref: '#/definitions/dto.CompositionCategory'
+      note:
+        type: string
+      section:
+        items:
+          $ref: '#/definitions/dto.SectionInput'
+        type: array
+      status:
+        $ref: '#/definitions/dto.CompositionStatusEnum'
+      type:
+        $ref: '#/definitions/dto.CompositionType'
+    type: object
+  dto.PatchMedicationInput:
+    properties:
+      status:
+        $ref: '#/definitions/domain.MedicationRequestStatus'
+    type: object
+  dto.PatchObservationInput:
+    properties:
+      observationType:
+        $ref: '#/definitions/dto.PatientVitalSignsEnum'
+      value:
+        type: string
+    required:
+    - observationType
+    - value
+    type: object
+  dto.PatchTaskInput:
+    properties:
+      author:
+        type: string
+      dueDate:
+        type: string
+      notes:
+        type: string
+      status:
+        $ref: '#/definitions/dto.TaskStatus'
+      updateReason:
+        type: string
+    type: object
+  dto.Patient:
+    properties:
+      active:
+        type: boolean
+      birthDate:
+        type: string
+      gender:
+        $ref: '#/definitions/dto.Gender'
+      id:
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.PatientInput:
+    properties:
+      birthDate:
+        type: string
+      contacts:
+        items:
+          $ref: '#/definitions/dto.ContactInput'
+        type: array
+      firstName:
+        type: string
+      gender:
+        $ref: '#/definitions/dto.Gender'
+      identifiers:
+        items:
+          $ref: '#/definitions/dto.IdentifierInput'
+        type: array
+      lastName:
+        type: string
+      otherNames:
+        type: string
+    required:
+    - firstName
+    - lastName
+    type: object
+  dto.PatientVitalSignsEnum:
+    enum:
+    - HEIGHT
+    - WEIGHT
+    - TEMPERATURE
+    - DIASTOLIC_BLOOD_PRESSURE
+    - SYSTOLIC_BLOOD_PRESSURE
+    - RESPIRATORY_RATE
+    - OXYGEN_SATURATION
+    - PULSE_RATE
+    - VIRAL_LOAD
+    - MUAC
+    - MENSTRUAL_PERIOD
+    - BLOOD_SUGAR
+    type: string
+    x-enum-varnames:
+    - PatientHieght
+    - PatientWeight
+    - PatientTemperature
+    - PatientDiastolicBloodPressure
+    - PatientSystolicBloodPressure
+    - PatientRespiratoryRate
+    - PatientOxygenSaturation
+    - PatientPulseRate
+    - PatientViralLoad
+    - PatientMidUpperCircumference
+    - PatientMenstrualPeriod
+    - PatientBloodSugar
+  dto.Period:
+    properties:
+      end:
+        type: string
+      id:
+        type: string
+      start:
+        type: string
+    type: object
+  dto.PrescriptionInput:
+    properties:
+      encounterID:
+        type: string
+      medications:
+        items:
+          $ref: '#/definitions/dto.PrescriptionMedicationInput'
+        type: array
+    required:
+    - encounterID
+    - medications
+    type: object
+  dto.PrescriptionMedicationInput:
+    properties:
+      dosageInstructions:
+        items:
+          $ref: '#/definitions/dto.DosageInstruction'
+        type: array
+      medicationID:
+        type: string
+      priority:
+        $ref: '#/definitions/dto.MedicationRequestPriority'
+    type: object
+  dto.Quantity:
+    properties:
+      code:
+        type: string
+      comparator:
+        $ref: '#/definitions/dto.QuantityComparatorEnum'
+      id:
+        type: string
+      system:
+        type: string
+      unit:
+        type: string
+      value:
+        type: number
+    type: object
+  dto.QuantityComparatorEnum:
+    enum:
+    - less_than
+    - less_than_or_equal_to
+    - greater_than_or_equal_to
+    - greater_than
+    type: string
+    x-enum-varnames:
+    - QuantityComparatorEnumLessThan
+    - QuantityComparatorEnumLessThanOrEqualTo
+    - QuantityComparatorEnumGreaterThanOrEqualTo
+    - QuantityComparatorEnumGreaterThan
+  dto.QuestionnaireResponse:
+    properties:
+      authored:
+        type: string
+      item:
+        items:
+          $ref: '#/definitions/dto.QuestionnaireResponseItem'
+        type: array
+      meta:
+        $ref: '#/definitions/dto.MetaInput'
+      resourceType:
+        type: string
+      status:
+        $ref: '#/definitions/domain.QuestionnaireResponseStatusEnum'
+    type: object
+  dto.QuestionnaireResponseItem:
+    properties:
+      answer:
+        items:
+          $ref: '#/definitions/dto.QuestionnaireResponseItemAnswer'
+        type: array
+      item:
+        items:
+          $ref: '#/definitions/dto.QuestionnaireResponseItem'
+        type: array
+      linkId:
+        type: string
+      text:
+        type: string
+    type: object
+  dto.QuestionnaireResponseItemAnswer:
+    properties:
+      item:
+        items:
+          $ref: '#/definitions/dto.QuestionnaireResponseItem'
+        type: array
+      valueAttachment:
+        $ref: '#/definitions/dto.Attachment'
+      valueBoolean:
+        type: boolean
+      valueCoding:
+        $ref: '#/definitions/dto.Coding'
+      valueDate:
+        type: string
+      valueDateTime:
+        type: string
+      valueDecimal:
+        type: number
+      valueInteger:
+        type: integer
+      valueQuantity:
+        $ref: '#/definitions/dto.Quantity'
+      valueReference:
+        $ref: '#/definitions/dto.Reference'
+      valueString:
+        type: string
+      valueTime:
+        type: string
+      valueUri:
+        type: string
+    type: object
+  dto.QuestionnaireReviewSummary:
+    properties:
+      questionnaireResponseID:
+        type: string
+      riskLevel:
+        type: string
+    type: object
+  dto.Reaction:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      severity:
+        type: string
+      system:
+        type: string
+    type: object
+  dto.ReactionInput:
+    properties:
+      code:
+        type: string
+      severity:
+        type: string
+      system:
+        type: string
+    type: object
+  dto.Reference:
+    properties:
+      display:
+        type: string
+      id:
+        type: string
+      identifier:
+        $ref: '#/definitions/dto.Identifier'
+      reference:
+        type: string
+      type:
+        type: string
+    type: object
+  dto.ReferralDetail:
+    properties:
+      id:
+        type: string
+      patientID:
+        type: string
+      patientName:
+        type: string
+      referralDate:
+        type: string
+      referralReportLink:
+        type: string
+      referredFor:
+        description: This could be Diagnostics, Specialist etc..
+        type: string
+      referredTests:
+        description: The actual tests the patient was referred for e.g Mammogram,
+          HPV etc..
+        items:
+          type: string
+        type: array
+      referredTo:
+        type: string
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+    type: object
+  dto.ReferralFacility:
+    properties:
+      branch:
+        type: string
+      email:
+        type: string
+      fhirOrganisationID:
+        type: string
+      name:
+        type: string
+      phoneNumber:
+        type: string
+    type: object
+  dto.ReferralInput:
+    properties:
+      encounterID:
+        type: string
+      facility:
+        $ref: '#/definitions/dto.FacilityInput'
+      notes:
+        type: string
+      referralType:
+        $ref: '#/definitions/dto.ReferralTypeEnum'
+      specialist:
+        type: string
+      tests:
+        items:
+          type: string
+        type: array
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+    required:
+    - encounterID
+    type: object
+  dto.ReferralTypeEnum:
+    enum:
+    - DIAGNOSTICS
+    - SPECIALIST
+    - TREATMENT
+    type: string
+    x-enum-varnames:
+    - DIAGNOSTICS
+    - SPECIALIST
+    - TREATMENT
+  dto.RiskAssessment:
+    properties:
+      basis:
+        items:
+          $ref: '#/definitions/dto.Reference'
+        type: array
+      encounter:
+        $ref: '#/definitions/dto.Reference'
+      id:
+        type: string
+      note:
+        items:
+          $ref: '#/definitions/dto.Annotation'
+        type: array
+      occurrenceDateTime:
+        type: string
+      prediction:
+        items:
+          $ref: '#/definitions/dto.RiskAssessmentPrediction'
+        type: array
+      subject:
+        $ref: '#/definitions/dto.Reference'
+      usageContext:
+        type: string
+    type: object
+  dto.RiskAssessmentPrediction:
+    properties:
+      id:
+        type: string
+      probabilityDecimal:
+        type: number
+      qualitativeRisk:
+        $ref: '#/definitions/dto.CodeableConcept'
+    type: object
+  dto.ScheduleAppointmentInput:
+    properties:
+      date:
+        type: string
+      encounterID:
+        type: string
+      patientID:
+        type: string
+      reason:
+        type: string
+    required:
+    - encounterID
+    - patientID
+    type: object
+  dto.ScheduleAppointmentPayload:
+    properties:
+      appointmentInput:
+        $ref: '#/definitions/dto.ScheduleAppointmentInput'
+      headerInput:
+        $ref: '#/definitions/dto.AdvantageHeaders'
+    required:
+    - headerInput
+    type: object
+  dto.ScreeningReport:
+    properties:
+      consent:
+        items:
+          $ref: '#/definitions/dto.Consent'
+        type: array
+      observation:
+        $ref: '#/definitions/dto.ObservationOutput'
+      referralDetails:
+        items:
+          $ref: '#/definitions/dto.ReferralDetail'
+        type: array
+      riskAssessment:
+        items:
+          $ref: '#/definitions/dto.RiskAssessment'
+        type: array
+    type: object
+  dto.ScreeningTypeEnum:
+    enum:
+    - CERVICAL_CANCER_SCREENING
+    - BREAST_CANCER_SCREENING
+    - PROSTATE_CANCER_SCREENING
+    type: string
+    x-enum-varnames:
+    - CervicalCancerScreeningTypeEnum
+    - BreastCancerScreeningTypeEnum
+    - ProstateCancerScreeningTypeEnum
+  dto.Section:
+    properties:
+      author:
+        type: string
+      code:
+        type: string
+      id:
+        type: string
+      section:
+        items:
+          $ref: '#/definitions/dto.Section'
+        type: array
+      text:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.SectionInput:
+    properties:
+      author:
+        type: string
+      code:
+        type: string
+      id:
+        type: string
+      section:
+        items:
+          $ref: '#/definitions/dto.SectionInput'
+        type: array
+      text:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.ServiceIdentifierInput:
+    properties:
+      identifierType:
+        $ref: '#/definitions/dto.Terminologies'
+      identifierValue:
+        type: string
+    type: object
+  dto.ServiceRequest:
+    properties:
+      date:
+        type: string
+      encounter:
+        $ref: '#/definitions/dto.Reference'
+      id:
+        type: string
+      intent:
+        type: string
+      note:
+        items:
+          $ref: '#/definitions/dto.Annotation'
+        type: array
+      orderDetails:
+        type: string
+      priority:
+        type: string
+      receivingFacility:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/dto.Observation'
+        type: array
+      status:
+        $ref: '#/definitions/dto.ServiceRequestStatus'
+      subject:
+        $ref: '#/definitions/dto.Reference'
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+    type: object
+  dto.ServiceRequestStatus:
+    enum:
+    - draft
+    - active
+    - on_hold
+    - revoked
+    - completed
+    - entered_in_error
+    - unknown
+    type: string
+    x-enum-varnames:
+    - ServiceRequestStatusDraft
+    - ServiceRequestStatusActive
+    - ServiceRequestStatusOnHold
+    - ServiceRequestStatusRevoked
+    - ServiceRequestStatusCompleted
+    - ServiceRequestStatusEnteredInError
+    - ServiceRequestStatusUnknown
+  dto.ShareReferralFormInput:
+    properties:
+      branchID:
+        type: string
+      serviceRequestID:
+        type: string
+      workstationID:
+        type: string
+    type: object
+  dto.StartEncounterInput:
+    properties:
+      episodeOfCareID:
+        type: string
+    required:
+    - episodeOfCareID
+    type: object
+  dto.TaskEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.TaskOutput'
+    type: object
+  dto.TaskOutput:
+    properties:
+      attachment:
+        items:
+          $ref: '#/definitions/dto.AttachmentResponse'
+        type: array
+      authoredOn:
+        type: string
+      description:
+        type: string
+      dueDate:
+        type: string
+      encounterID:
+        type: string
+      id:
+        type: string
+      lastUpdated:
+        type: string
+      notes:
+        $ref: '#/definitions/dto.Annotation'
+      priority:
+        type: string
+      status:
+        $ref: '#/definitions/dto.TaskStatus'
+      statusReason:
+        type: string
+      subject:
+        $ref: '#/definitions/dto.Reference'
+      task:
+        type: string
+      usageContext:
+        $ref: '#/definitions/dto.ScreeningTypeEnum'
+      workflow:
+        type: string
+    type: object
+  dto.TaskOutputConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.TaskEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.TaskStatus:
+    enum:
+    - completed
+    - requested
+    - cancelled
+    - received
+    - accepted
+    - ready
+    type: string
+    x-enum-varnames:
+    - CompletedTasksStatus
+    - RequestedTasksStatus
+    - CancelledTasksStatus
+    - ReceivedTasksStatus
+    - AcceptedTasksStatus
+    - ReadyTasksStatus
+  dto.Terminologies:
+    enum:
+    - CIEL
+    type: string
+    x-enum-varnames:
+    - TerminologiesCIEL
+  dto.Terminology:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      system:
+        $ref: '#/definitions/domain.TerminologySource'
+    type: object
+  dto.TerminologyConnection:
+    properties:
+      edges:
+        items:
+          $ref: '#/definitions/dto.TerminologyEdge'
+        type: array
+      pageInfo:
+        $ref: '#/definitions/dto.PageInfo'
+      totalCount:
+        type: integer
+    type: object
+  dto.TerminologyEdge:
+    properties:
+      cursor:
+        type: string
+      node:
+        $ref: '#/definitions/dto.Terminology'
+    type: object
+  domain.TerminologySource:
+    enum:
+    - ICD10
+    - ICD_10_WHO
+    - ICD_11_WHO
+    - CIEL
+    - LOINC
+    - ICHI
+    type: string
+    x-enum-varnames:
+    - TerminologySourceICD10
+    - TerminologySourceICD10WHO
+    - TerminologySourceICD11WHO
+    - TerminologySourceCIEL
+    - TerminologySourceLOINC
+    - TerminologySourceICHI
+  dto.TestInput:
+    properties:
+      input:
+        $ref: '#/definitions/dto.DiagnosticReportInput'
+      testType:
+        $ref: '#/definitions/dto.LabTestTypeEnum'
+    required:
+    - input
+    - testType
+    type: object
+  dto.TestOrder:
+    properties:
+      clinicalNote:
+        type: string
+      conditionID:
+        description: |-
+          This field will be used to hold the diagnosis, since it will be created as a
+          condition in FHIR
+        type: string
+      encounterID:
+        type: string
+      facility:
+        $ref: '#/definitions/dto.ReferralFacility'
+      loincCode:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.TestOrderObservation:
+    properties:
+      finding:
+        type: string
+      test:
+        type: string
+      value:
+        type: string
+    type: object
+  dto.TestOrderResult:
+    properties:
+      serviceRequestID:
+        type: string
+      test:
+        items:
+          $ref: '#/definitions/dto.TestOrderObservation'
+        type: array
+    type: object
+  dto.TestResultInput:
+    properties:
+      entry:
+        $ref: '#/definitions/dto.DiagnosticReportInput'
+      serviceRequestID:
+        type: string
+    type: object
+  dto.ValueSetData:
+    properties:
+      code:
+        type: string
+      display:
+        type: string
+    type: object
+  rest.APIResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: This is the clinical data repository API.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Clinical Data Repository API
+  version: "1.0"
+paths:
+  /api/v1/allergyintolerance:
+    get:
+      consumes:
+      - application/json
+      description: List the allergies of the patient given by the ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: query
+        name: patient_id
+        required: true
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: limit
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: after
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: last
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AllergyConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instances: List patient allergies'
+      tags:
+      - AllergyIntolerance
+    post:
+      consumes:
+      - application/json
+      description: Creates an AllergyIntolerance FHIR resource
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: AllergyIntolerance payload
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AllergyInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/dto.Allergy'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Creates FHIR AllergyIntolerance'
+      tags:
+      - AllergyIntolerance
+  /api/v1/allergyintolerance/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a patient's allergy intolerance
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: AllergyIntolerance ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Allergy'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Get patient''s allergy information'
+      tags:
+      - AllergyIntolerance
+  /api/v1/allergyintolerance/search:
+    get:
+      consumes:
+      - application/json
+      description: Search for allergy by name
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Allergy Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: limit
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: after
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: last
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TerminologyConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'search-type: Search for allergy'
+      tags:
+      - AllergyIntolerance
+  /api/v1/appointment:
+    post:
+      consumes:
+      - application/json
+      description: Creates new schedule for a patient. It'll show up in advantage
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Schedule an appointment
+        in: body
+        name: AppointmentPayload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ScheduleAppointmentPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Sets up a new patient schedule'
+      tags:
+      - Appointment
+  /api/v1/compositions:
+    get:
+      consumes:
+      - application/json
+      description: List the compositions of the patient given by the ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: query
+        name: patient_id
+        required: true
+        type: string
+      - description: Encounter ID
+        in: query
+        name: encounter_id
+        type: string
+      - description: Date
+        example: "2025-01-31"
+        in: query
+        name: date
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: limit
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: after
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: last
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CompositionConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instances: List patient compositions'
+      tags:
+      - Composition
+    post:
+      consumes:
+      - application/json
+      description: Creates FHIR Composition resource
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: CompositionInput payload
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CompositionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/dto.Composition'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Records a FHIR Composition'
+      tags:
+      - Composition
+  /api/v1/compositions/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates a FHIR Composition resource
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: composition ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Patch Compostion Payload
+        in: body
+        name: updateData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatchCompositionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Composition'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: Updates a FHIR Composition'
+      tags:
+      - Composition
+  /api/v1/condition/encounter-diagnosis:
+    post:
+      consumes:
+      - application/json
+      description: Creates a FHIR Condition resource
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Condition payload
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OncologyDiagnosisInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/dto.Condition'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: Records patient's oncological condition(s)
+      tags:
+      - Conditions
+  /api/v1/conditions:
+    get:
+      consumes:
+      - application/json
+      description: List the conditions of the patient given by the ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: query
+        name: patient_id
+        required: true
+        type: string
+      - description: Encounter ID
+        in: query
+        name: encounter_id
+        type: string
+      - description: Date
+        example: "2025-01-31"
+        in: query
+        name: date
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: limit
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: after
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: last
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ConditionConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instances: List patient conditions'
+      tags:
+      - Conditions
+    post:
+      consumes:
+      - application/json
+      description: Creates a FHIR Condition resource
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Condition payload
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ConditionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/dto.Condition'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Records patient''s condition(s)'
+      tags:
+      - Conditions
+  /api/v1/consent:
+    post:
+      consumes:
+      - application/json
+      - application/json
+      description: |-
+        Record user consent and return the consent output
+        Record user consent and return the consent output
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: consent input
+        in: body
+        name: consentInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ConsentInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ConsentOutput'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: Record user consent
+      tags:
+      - Consent
+      - Consent
+  /api/v1/encounter:
+    get:
+      consumes:
+      - application/json
+      description: List the encounters of the patient given by the ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: query
+        name: patient_id
+        required: true
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: limit
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: after
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: last
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EncounterConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instances: List patient encounters'
+      tags:
+      - Encounter
+    post:
+      consumes:
+      - application/json
+      description: Starts an encounter within an episode of care and returns the encounter
+        ID
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: ID of the associated episode
+        in: body
+        name: episodeOfCareID
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StartEncounterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Start an encounter for an episode'
+      tags:
+      - Encounter
+  /api/v1/encounter/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the status of an encounter and returns the encounter
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Encounter ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Encounter Input
+        in: body
+        name: EncounterInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EncounterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Encounter'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: Updates the status of an encounter'
+      tags:
+      - Encounter
+  /api/v1/encounter/{id}/associated-resources:
+    get:
+      consumes:
+      - application/json
+      description: Retrives the resources associated to a specific encounter
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: encounter ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: bool
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Fetch encounter associated resources'
+      tags:
+      - Encounter
+  /api/v1/encounter/{id}/end:
+    patch:
+      consumes:
+      - application/json
+      description: Ends an encounter within an episode and returns a boolean of the
+        status
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: ID of the encounter
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: End an encounter within an episode'
+      tags:
+      - Encounter
+  /api/v1/encounter/screening-report:
+    get:
+      consumes:
+      - application/json
+      description: Refers to a screening report
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: encounterID
+        example: ABC12345
+        in: query
+        name: encounterID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Screening Report
+          schema:
+            $ref: '#/definitions/dto.ScreeningReport'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Used to generate a screening report'
+      tags:
+      - Encounter
+  /api/v1/end-screening/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Ends a Screening
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: encounter ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: bool
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: Ends Screening'
+      tags:
+      - Encounter
+  /api/v1/episode-of-care:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new episode of care and returns it to the client
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: EpisodeOfCare Input
+        in: body
+        name: episodeOfCare
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EpisodeOfCareInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EpisodeOfCare'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Create a new episode of care'
+      tags:
+      - EpisodeOfCare
+  /api/v1/episode-of-care/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details about an episode of care and returns it
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: episodeOfCare ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EpisodeOfCare'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Get details about an episode of care'
+      tags:
+      - EpisodeOfCare
+    patch:
+      consumes:
+      - application/json
+      description: Updates an episode of care and returns it to the client
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: episodeOfCare ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: EpisodeOfCare Input
+        in: body
+        name: episodeOfCare
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EpisodeOfCareInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EpisodeOfCare'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: Update an episode of care'
+      tags:
+      - EpisodeOfCare
+  /api/v1/episode-of-care/{id}/end:
+    patch:
+      consumes:
+      - application/json
+      description: Sets an episode of care status to finished and returns it to the
+        client
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: episodeOfCare ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EpisodeOfCare'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: End an episode of care'
+      tags:
+      - EpisodeOfCare
+  /api/v1/lab-order:
+    post:
+      consumes:
+      - application/json
+      description: Creates lab order results
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Create lab order results
+        in: body
+        name: TestOrderResult
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TestOrderResult'
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: Diagnostic report
+          schema:
+            $ref: '#/definitions/dto.DiagnosticReport'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Create lab order results'
+      tags:
+      - Diagnostics
+  /api/v1/lab-orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a lab order given its service request ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Service Request ID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ServiceRequest'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Retrieves a lab order given its ID (Service Request
+        ID)'
+      tags:
+      - Service Request
+  /api/v1/lab-orders/test:
+    post:
+      consumes:
+      - application/json
+      description: CreateTestOrder is used to create a new diagnostic test order based
+        on the provided input.
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: TestOrder
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TestOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service Request
+          schema:
+            $ref: '#/definitions/dto.ServiceRequest'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Used to create a new diagnostic test order based on the
+        provided input.'
+      tags:
+      - Service Request
+  /api/v1/media:
+    get:
+      consumes:
+      - application/json
+      description: List the media of the patient given by the ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: query
+        name: patient_id
+        required: true
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: limit
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: after
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: last
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: before
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MediaConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: List patient media
+      tags:
+      - Media
+  /api/v1/medical-data/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a patient's medical data
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: query
+        name: patientID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MedicalData'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Get Patient''s medical data'
+      tags:
+      - Patient
+  /api/v1/medication-request/:
+    get:
+      description: Retrieves is used to retrieve a paginated list of available medication
+        requests given some parameters
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Date
+        in: path
+        name: date
+        type: string
+      - description: Patient ID
+        in: path
+        name: patientID
+        type: string
+      - description: encounter ID
+        in: path
+        name: encounterID
+        type: string
+      - description: first
+        in: path
+        name: first
+        type: string
+      - description: last
+        in: path
+        name: last
+        type: string
+      - description: before
+        in: path
+        name: before
+        type: string
+      - description: after
+        in: path
+        name: after
+        type: string
+      - description: status
+        in: path
+        name: status
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MedicationRequestConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instances: Retrieves a list of all available medication requests'
+      tags:
+      - Medication
+  /api/v1/medication-request/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches medication request
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: MedicationRequestID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MedicationRequestOutput'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Get Medication request by ID'
+      tags:
+      - Medication
+  /api/v1/medication/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches medication
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: MedicationID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MedicationOutput'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Get Medication by ID'
+      tags:
+      - Medication
+    patch:
+      consumes:
+      - application/json
+      description: Updates a medication resource
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Medication ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Medication Request
+        in: body
+        name: updateData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatchMedicationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Medication Request
+          schema:
+            $ref: '#/definitions/dto.MedicationRequestOutput'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: Updates a patient medication'
+      tags:
+      - Medication
+  /api/v1/medication/prescription:
+    post:
+      consumes:
+      - application/json
+      description: Create a new prescription
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Prescription Input
+        in: body
+        name: PrescriptionInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PrescriptionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Array of Medication Request
+          schema:
+            $ref: '#/definitions/dto.MedicationRequestOutput'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: CreatePrescription is used to create a new prescription'
+      tags:
+      - Medication
+  /api/v1/observations:
+    get:
+      consumes:
+      - application/json
+      description: Get entries for a category of observation
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: query
+        name: patient_id
+        required: true
+        type: string
+      - description: Encounter ID
+        in: query
+        name: encounter_id
+        type: string
+      - description: Observation concept
+        enum:
+        - TEMPERATURE
+        - HEIGHT
+        - WEIGHT
+        - RESPIRATORY_RATE
+        - PULSE_RATE
+        - BLOOD_PRESSURE
+        - BMI
+        - VIRAL_LOAD
+        - MUAC
+        - OXYGEN_SATURATION
+        - BLOOD_SUGAR
+        - LAST_MENSTRUAL_PERIOD
+        - DIASTOLIC_BLOOD_PRESSURE
+        - COLPOSCOPY
+        - VIA
+        - IMMUNO_HISTO_CHEMISTRY
+        - POST_COITAL_BLEEDING
+        - HISTORY_OF_PRESENTING_ILLNESS
+        - PAST_MEDICAL_AND_SURGICAL_HISTORY
+        - FAMILY_AND_SOCIAL_HISTORY
+        - HPV
+        in: query
+        name: concept
+        type: string
+      - description: Date
+        example: "2025-01-31"
+        in: query
+        name: date
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: limit
+        type: string
+      - description: Forward pagination argument
+        in: query
+        name: after
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: last
+        type: string
+      - description: Backward pagination argument
+        in: query
+        name: before
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ObservationConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: General endpoint to get entries for an observation category
+      tags:
+      - Observations
+    post:
+      consumes:
+      - application/json
+      - application/json
+      description: |-
+        Record a type of observation defined by the concept
+        Record a type of observation defined by the concept
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: observation input
+        in: body
+        name: observationInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ObservationInput'
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: observation input
+        in: body
+        name: observationInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ObservationInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Observation output
+          schema:
+            $ref: '#/definitions/dto.Observation'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      - OAuth2Password: []
+      summary: General endpoint to record different type of observation concepts
+      tags:
+      - Observations
+      - Observations
+  /api/v1/observations/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Observation is retrieve patient observations
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Observation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Observation'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: Used to retrieve observations
+      tags:
+      - Observations
+    patch:
+      consumes:
+      - application/json
+      description: PatchPatientObservations is used to patch a patient's vital signs
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: PatchObservationInput
+        in: body
+        name: PatchObservationInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatchObservationInput'
+      - description: Observation ID
+        in: path
+        name: observationID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Observation'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: Updates a Patient's Vitals signss
+      tags:
+      - Observations
+  /api/v1/patient:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new patient with all of their details
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient input
+        in: body
+        name: PatientInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatientInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Patient
+          schema:
+            $ref: '#/definitions/dto.Patient'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Create a new patient'
+      tags:
+      - Patient
+  /api/v1/patient/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a Patient
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-delete: Deletes a Patient'
+      tags:
+      - Patient
+    patch:
+      consumes:
+      - application/json
+      description: Modifies patient basic information
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Patient Input
+        in: body
+        name: updateData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatientInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Patient
+          schema:
+            $ref: '#/definitions/dto.Patient'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: PatchPatient is used to modify a patient basic information
+      tags:
+      - Patient
+  /api/v1/questionnaire-response:
+    post:
+      consumes:
+      - application/json
+      description: CreateQuestionnaireResponses is used to create a questionnaire
+        response
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: QuestionnaireResponse
+        in: body
+        name: QuestionnaireResponseInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QuestionnaireResponse'
+      - description: Encounter ID
+        in: query
+        name: encounterID
+        required: true
+        type: string
+      - description: Questionnaire ID
+        in: query
+        name: questionnaireID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.QuestionnaireReviewSummary'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: Creates a questionnaire response
+      tags:
+      - QuestionnaireResponse
+  /api/v1/questionnaire-response/{id}:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint processes the full questionnaire response data and
+        returns a minimal, streamlined version that includes only essential information
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: QuestionnaireResponse ID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.SimpleQuestionnaireResponse'
+            type: array
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: handles the request to retrieve a simplified version
+        of a QuestionnaireResponse'
+      tags:
+      - QuestionnaireResponse
+  /api/v1/refer:
+    post:
+      consumes:
+      - application/json
+      description: Refers a patient from on facility to another
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: ReferPatientInput
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ReferralInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service Request
+          schema:
+            $ref: '#/definitions/dto.ServiceRequest'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Used to refer patient from one facility to another'
+      tags:
+      - Service Request
+  /api/v1/referV2:
+    post:
+      consumes:
+      - application/json
+      description: CreateReferral is used to create a new patient referral in FHIR
+        as a service request. This method will mainly be used by advantage backend
+        to save the referral details as part of the patient profile
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: CreateReferralInput
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateReferralInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service Request
+          schema:
+            $ref: '#/definitions/dto.ServiceRequest'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Used to create a new patient referral in FHIR as a service
+        request. This method will mainly be used by advantage backend to save the
+        referral details as part of the patient profile'
+      tags:
+      - Service Request
+  /api/v1/referral:
+    get:
+      consumes:
+      - application/json
+      description: Fetch Patient Referral details given service request ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Service Request ID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: query
+        name: serviceRequestID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PatientReferralDetails'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Get Patient Referral by service request ID'
+      tags:
+      - Service Request
+  /api/v1/referral-form:
+    post:
+      consumes:
+      - application/json
+      description: ShareReferralForm searches for a document reference using the service
+        request ID associated and retrieves the document URL (which is the url of
+        the referral form that we want to share) and sends it to the patient via SMS
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: ShareReferralFormInput
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ShareReferralFormInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Used to search for a document reference using the service
+        request ID associated and retrieves the document URL (which is the url of
+        the referral form that we want to share) and sends it to the patient via SMS'
+      tags:
+      - Service Request
+  /api/v1/referral-report:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve referral report by service request ID as PDF file
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Service Request ID
+        example: ABC12345
+        in: query
+        name: servicerequest
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Report generated successfully!
+          schema:
+            type: file
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Generate referral report'
+      tags:
+      - Service Request
+  /api/v1/risk-assessment/{id}:
+    get:
+      consumes:
+      - application/json
+      description: RiskAssessment is get the details of a risk assessment
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Risk Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RiskAssessment'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: Used to fetch risk assessment details
+      tags:
+      - RiskAssessment
+  /api/v1/task:
+    get:
+      consumes:
+      - application/json
+      description: List Task is used to list available task depending on the provided
+        filters
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Date
+        in: query
+        name: date
+        type: string
+      - description: Patient ID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: query
+        name: patientID
+        type: string
+      - description: Encounter ID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: query
+        name: encounterID
+        type: string
+      - description: First
+        in: query
+        name: first
+        type: string
+      - description: Last
+        in: query
+        name: last
+        type: string
+      - description: Before
+        in: query
+        name: before
+        type: string
+      - description: After
+        in: query
+        name: after
+        type: string
+      - description: Type
+        in: query
+        name: type
+        type: string
+      - description: Status
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tasks
+          schema:
+            $ref: '#/definitions/dto.TaskOutputConnection'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instances: List Task is used to list available task depending
+        on the provided filters'
+      tags:
+      - Task
+  /api/v1/task/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a Task given a task ID
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Task ID
+        example: 5f4a944d-abcd-405a-91cc-a88451195bfe
+        in: path
+        name: taskID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TaskOutput'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'read-instance: Retrieves a Task by its ID'
+      tags:
+      - Task
+    patch:
+      consumes:
+      - application/json
+      description: Updates a FHIR Task resource
+      parameters:
+      - description: Clinical Organizatin ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Patch Task Payload
+        in: body
+        name: updateData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatchTaskInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: bool
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "500":
+          description: 'Error: InternalServerError'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'instance-patch: Updates a FHIR Task'
+      tags:
+      - Task
+  /api/v1/test-results:
+    post:
+      consumes:
+      - application/json
+      description: Record test results
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Record test results
+        in: body
+        name: TestResultInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TestResultInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Diagnostic report
+          schema:
+            $ref: '#/definitions/dto.DiagnosticReport'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Records test results'
+      tags:
+      - Diagnostics
+  /api/v1/tests:
+    post:
+      consumes:
+      - application/json
+      description: Records lab test results
+      parameters:
+      - description: Clinical-Organization-ID
+        in: header
+        name: Clinical-Organization-ID
+        required: true
+        type: string
+      - description: Clinical-Facility-ID
+        in: header
+        name: Clinical-Facility-ID
+        required: true
+        type: string
+      - description: Record Lab tests
+        in: body
+        name: PSAInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TestInput'
+      - description: Record Lab tests
+        in: body
+        name: PSAInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TestInput'
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: Recording lab tests
+          schema:
+            $ref: '#/definitions/dto.DiagnosticReport'
+        "400":
+          description: 'Error: Bad Request'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "401":
+          description: 'Error: Not Authorized'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+        "404":
+          description: 'Error: Not Found'
+          schema:
+            $ref: '#/definitions/rest.APIResponse'
+      security:
+      - OAuth2Password: []
+      summary: 'create-type: Recording lab test'
+      tags:
+      - Diagnostics
+securityDefinitions:
+  OAuth2Password:
+    flow: password
+    scopes:
+      read: Grants read access
+    tokenUrl: https://accounts.staging.tiberbu.savannahghi.org/oauth2/token/
+    type: oauth2
+swagger: "2.0"

@@ -1,0 +1,392 @@
+input HealthTimelineInput {
+  patientID: String!
+  offset: Int!
+  limit: Int!
+  type: [String!]!
+}
+
+input EpisodeOfCareInput {
+  status: EpisodeOfCareStatusEnum!
+  patientID: String!
+}
+
+input EncounterInput {
+  status: EncounterStatusEnum
+}
+
+input ObservationInput {
+  status: ObservationStatus!
+  encounterID: String!
+  value: String!
+  note: String
+  observationSubtype: ObservationSubtype
+  usageContext: ScreeningTypeEnum
+}
+
+input PatientInput {
+  firstName: String!
+  lastName: String
+  otherNames: String
+  birthDate: Date!
+  gender: Gender!
+  identifiers: [IdentifierInput!]
+  contacts: [ContactInput!]
+}
+
+input PatchPatientInput {
+  firstName: String
+  lastName: String
+  otherNames: String
+  birthDate: Date
+  gender: Gender
+  identifiers: [IdentifierInput!]
+  contacts: [ContactInput!]
+}
+
+input IdentifierInput {
+  type: IdentifierType!
+  value: String!
+}
+
+input ContactInput {
+  type: ContactType!
+  value: String!
+}
+
+input ConditionInput {
+  code: String!
+  name: String!
+  system: TerminologySource
+  status: ConditionStatus!
+  category: ConditionCategory
+  encounterID: String!
+  onsetDate: Date
+  note: String
+  severity: ConditionSeverity!
+}
+
+input AllergyInput {
+  code: String!
+  terminologySource: TerminologySource!
+  encounterID: String!
+  reaction: ReactionInput
+}
+
+input CompositionInput {
+  type: CompositionType!
+  status: CompositionStatusEnum!
+  category: CompositionCategory!
+  encounterID: String!
+  note: String!
+}
+
+input PatchCompositionInput {
+  type: CompositionType
+  status: CompositionStatusEnum
+  category: CompositionCategory
+  note: String
+  section: [SectionInput!]
+}
+
+input SectionInput {
+  id: String
+  title: String
+  code: String
+  author: String
+  text: String
+  section: [SectionInput!]
+}
+
+input ReactionInput {
+  code: String
+  system: String
+  severity: AllergyIntoleranceReactionSeverityEnum
+}
+
+input PaginationInput {
+  first: Int
+  after: String
+
+  last: Int
+  before: String
+}
+
+# NOTE: We will eventually transition to this once all the pagination work has been done. This model will be coming from serverutils lib
+input Pagination {
+  first: Int
+  after: String
+
+  last: Int
+  before: String
+}
+
+input ConsentInput {
+  decision: ConsentDecisionEnum!
+  encounterID: String!
+  denyReason: String
+  screeningType: ScreeningTypeEnum
+}
+
+
+input ReferenceInput {
+  reference: String
+  type: URI
+  display: String
+}
+
+input QuantityInput {
+  value: Float
+  comparator: QuantityComparatorEnum
+  unit: String
+  system: URI
+  code: Code
+}
+
+input AttachmentInput {
+  contentType: Code
+  data: Base64Binary
+  URL: URL
+  size: Int
+  hash: Base64Binary
+  title: String
+}
+
+input CodingInput {
+  system: URI
+  version: String
+  code: Code
+  display: String
+}
+input QuestionnaireResponseItemInput {
+  linkId: String
+  text: String
+  answer: [QuestionnaireResponseItemAnswerInput]
+  item: [QuestionnaireResponseItemInput]
+}
+input QuestionnaireResponseItemAnswerInput {
+  valueBoolean: Boolean
+  valueDecimal: Float
+  valueInteger: Int
+  valueDate: String
+  valueDateTime: String
+  valueTime: String
+  valueString: String
+  valueUri: String
+  valueAttachment: AttachmentInput
+  valueCoding: CodingInput
+  valueQuantity: QuantityInput
+  valueReference: ReferenceInput
+  item: [QuestionnaireResponseItemInput]
+}
+
+input QuestionnaireResponseInput {
+  resourceType: String!
+  meta: MetaInput!
+  status: QuestionnaireResponseStatusEnum!
+  authored: String!
+  item: [QuestionnaireResponseItemInput]
+}
+
+input MetaInput {
+  versionId: String
+  lastUpdated: Time
+  source: String
+  tag: [CodingInput]
+  security: [CodingInput]
+  profile: [URI]
+}
+
+input DiagnosticReportInput {
+  encounterID: String!
+  note: String
+  findings: String
+  media: [MediaInput!]
+  usageContext: ScreeningTypeEnum
+}
+
+input PSAInput {
+  diagnosticInput: DiagnosticReportInput!
+  psaType: PSAType
+}
+
+input MediaInput {
+  id: ID!
+  name: String!
+  mediaLink: String!
+}
+
+input ReferralInput {
+  encounterID: String!
+  referralType: ReferralTypeEnum!
+  tests: [String]
+  specialist: String
+  facility: FacilityInput!
+  referralNote: String!
+  usageContext: ScreeningTypeEnum
+}
+
+input FacilityInput {
+  name: String!
+  county: String!
+  contact: String
+  email: String
+
+  #shared
+  phone: String
+  active: Boolean
+  country: Country
+  address: String
+  description: String
+  fhirOrganisationID: String
+  identifier: FacilityIdentifierInput
+  coordinates: CoordinatesInput
+  services: [FacilityServiceInput!]
+  businessHours: [BusinessHoursInput!]
+}
+
+input AdvantageHeadersInput {
+  organisation: String!
+  cluster: String!
+  department: String!
+  branch: String!
+  workstation: String!
+  variant: String!
+}
+
+input ScheduleAppointmentInput {
+  encounterID: String!
+  patientID: String!
+  reason: String
+  date: Date
+}
+
+input TaskInput {
+  encounterID: String!
+  task: String!
+  workflow: ScreeningTypeEnum
+  description: String
+  dueDate: DateTime
+}
+
+input FilterInput {
+  patientID: ID
+  encounterID: ID
+  date: Date
+}
+
+input TaskFilterInput {
+  filterInput: FilterInput
+  type: String
+  status: TaskStatus
+}
+
+input MedicationRequestFilterInput {
+  filterInput: FilterInput
+  status: MedicationRequestStatus
+}
+
+input RiskAssessmentFilterInput {
+	filterInput: FilterInput
+	screeningType: ScreeningTypeEnum
+  result: String
+}
+
+input PatchTaskInput {
+  status: TaskStatus
+  dueDate: DateTime
+  author: ID
+  notes: String
+  updateReason: String
+}
+
+input ServiceRequestFilterInput {
+  filterInput: FilterInput
+  facilityID: ID
+  type: String
+  status: ServiceRequestStatus
+}
+
+input ValueSetDataInput {
+  code: String
+  display: String
+}
+
+input DosageInstructionInput {
+  route: ValueSetDataInput!
+  doseQuantity: Float
+  doseUnit: String
+  period: String
+  periodUnit: UnitsOfTimeEnum
+  frequency: Int
+  duration: String
+  durationUnit: UnitsOfTimeEnum
+  startDate: DateTime
+  endDate: DateTime
+  condition: String
+  patientInstruction: String
+  additionalInstruction: [String]
+  asNeeded: Boolean
+  freeTextInstruction: String
+}
+
+input PrescriptionInput {
+  encounterID: String!
+  medications: [PrescriptionMedicationInput]
+}
+
+input PrescriptionMedicationInput {
+  priority: MedicationRequestPriority!
+  medicationID: String!
+  dosageInstructions: [DosageInstructionInput]
+}
+
+input CreateReferralInput {
+  encounterID: String!
+  referralType: String!
+  urgency: String!
+  clinicalHistory: String
+  referralDate: Date
+  diagnosis: String
+  referredFrom: ReferralFacility
+  referredTo: ReferralFacility!
+  
+  # empower related
+  tests: [String]
+  specialist: String
+  usageContext: ScreeningTypeEnum!
+}
+
+input ReferralFacility {
+  fhirOrganisationID: String!
+  name: String
+  phoneNumber: String
+  email: String
+  branch: String
+}
+
+input TestOrder {
+  encounterID: String!
+  diagnosis: String
+  name: String!
+  loincCode: String!
+  status: String
+  facility: ReferralFacility
+  clinicalNote: String
+}
+
+input TestOrderResult {
+  serviceRequestID: String!
+  test: [TestOrderObservation!]
+}
+
+input TestOrderObservation {
+  Test: String
+  value: String
+  finding: String
+}
+
+input TestResultInput {
+  entry: DiagnosticReportInput!
+  serviceRequestID: ID!
+
+}
