@@ -70,11 +70,14 @@ func (c *ClinicalImpl) ReferPatient(
 
 	var performerReference string
 
-	if input.Facility.FHIROrganisationID == "" {
+	// Facility is an optional-looking pointer with no validation tag, so a caller
+	// that omits it reached the field access below and panicked. The intended
+	// behaviour was always to reject the request with the message below.
+	if input.Facility == nil || input.Facility.FHIROrganisationID == "" {
 		return nil, fmt.Errorf("please provide the facility receiving the referral")
-	} else {
-		performerReference = fmt.Sprintf("Organization/%s", input.Facility.FHIROrganisationID)
 	}
+
+	performerReference = fmt.Sprintf("Organization/%s", input.Facility.FHIROrganisationID)
 
 	serviceRequestSystem := helpers.CodeSystem("service-request-cs")
 

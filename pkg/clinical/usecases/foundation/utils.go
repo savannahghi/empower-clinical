@@ -432,9 +432,15 @@ func MapFHIRObservationToObservationDTO(fhirObservation domain.FHIRObservation) 
 		Value:  value,
 	}
 
-	if fhirObservation.Code != nil {
-		obs.Code = string(*fhirObservation.Coding().Code)
-		obs.Name = fhirObservation.Coding().Display
+	// Coding() returns nil when Code carries an empty Coding slice, so guarding on
+	// Code alone is not enough - that combination panicked here whenever an
+	// observation was stored without a resolved coding.
+	if coding := fhirObservation.Coding(); coding != nil {
+		if coding.Code != nil {
+			obs.Code = string(*coding.Code)
+		}
+
+		obs.Name = coding.Display
 	}
 
 	if len(fhirObservation.Category) > 0 {

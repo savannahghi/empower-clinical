@@ -360,13 +360,20 @@ func (c *BaseImpl) EncounterAssociatedResources(ctx context.Context, encounterID
 				category = string(*observation.Category[0].Coding[0].Code)
 			}
 
+			// Same nil-coding hazard as the observation mapper: an observation
+			// stored without a resolved coding has Code set but Coding() nil.
+			observationCode := ""
+			if coding := observation.Coding(); coding != nil && coding.Code != nil {
+				observationCode = string(*coding.Code)
+			}
+
 			output := &dto.Observation{
 				ID:           *observation.ID,
 				Name:         observation.Code.Text,
 				Value:        observationValue,
 				Status:       dto.ObservationStatus(*observation.Status),
 				TimeRecorded: instant,
-				Code:         string(*observation.Coding().Code),
+				Code:         observationCode,
 				Category:     category,
 				Note:         observationNote,
 			}
