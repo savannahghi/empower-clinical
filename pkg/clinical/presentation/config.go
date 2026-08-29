@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"regexp"
 	"time"
 
@@ -233,9 +234,26 @@ func StartServer(
 
 	upload := upload.NewServiceUpload(ctx)
 
-	pubsubSvc, err := pubsubmessaging.NewServicePubSubMessaging(ctx, pubSubClient)
-	if err != nil {
-		serverutils.LogStartupError(ctx, fmt.Errorf("failed to initialize pubsub messaging service: %w", err))
+	// Integration events are published over NATS by default, which needs no cloud
+	// account. Set PUBSUB_BACKEND=gcp to use Google Cloud Pub/Sub instead.
+	//
+	// Either way this is a hard failure: the events carry referral tasks, care
+	// plans, follow-ups and FHIR ID writebacks, and a referral recorded without
+	// its downstream task is worse than a referral that was refused.
+	var pubsubSvc pubsubmessaging.ServicePubsub
+
+	if strings.EqualFold(os.Getenv("PUBSUB_BACKEND"), "gcp") {
+		pubsubSvc, err = pubsubmessaging.NewServicePubSubMessaging(ctx, pubSubClient)
+		if err != nil {
+			serverutils.LogStartupError(ctx, fmt.Errorf("failed to initialize pubsub messaging service: %w", err))
+			os.Exit(1)
+		}
+	} else {
+		pubsubSvc, err = pubsubmessaging.NewNATSPubSub(os.Getenv("NATS_URL"), "")
+		if err != nil {
+			serverutils.LogStartupError(ctx, fmt.Errorf("failed to initialize NATS messaging: %w", err))
+			os.Exit(1)
+		}
 	}
 
 	advantageSvc := advantage.NewServiceAdvantage(authclient)
