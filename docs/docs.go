@@ -7202,7 +7202,7 @@ const docTemplate = `{
         "OAuth2Password": {
             "type": "oauth2",
             "flow": "password",
-            "tokenUrl": "https://accounts.staging.tiberbu.savannahghi.org/oauth2/token/",
+            "tokenUrl": "https://keycloak.example/realms/example/protocol/openid-connect/token",
             "scopes": {
                 "read": "Grants read access"
             }

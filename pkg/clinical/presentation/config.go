@@ -19,12 +19,10 @@ import (
 	"github.com/Nerzal/gocloak/v13"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
-	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	sloggin "github.com/samber/slog-gin"
-	"github.com/savannahghi/authutils"
 	hapifhirgo "github.com/savannahghi/hapi-fhir-go"
 	"github.com/savannahghi/serverutils"
 	silgotel "github.com/savannahghi/sil-gotel"
@@ -37,7 +35,6 @@ import (
 	fhir "github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/datastore/cloudhealthcare"
 	hapifhir "github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/datastore/hapi_fhir"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/advantage"
-	auth "github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/authutils"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/keycloak"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/mail"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/mapper"
@@ -93,14 +90,14 @@ func isAllowedOrigin(origin string, compiledPatterns []*regexp.Regexp) bool {
 	return false
 }
 
-var (
-	authServerEndpoint = serverutils.MustGetEnvVar("AUTHSERVER_ENDPOINT")
-	clientID           = serverutils.MustGetEnvVar("CLIENT_ID")
-	clientSecret       = serverutils.MustGetEnvVar("CLIENT_SECRET")
-	username           = serverutils.MustGetEnvVar("AUTH_USERNAME")
-	password           = serverutils.MustGetEnvVar("AUTH_PASSWORD")
-	grantType          = serverutils.MustGetEnvVar("GRANT_TYPE")
-)
+// keycloakTokenURL is the OIDC token endpoint for the configured realm.
+func keycloakTokenURL() string {
+	return fmt.Sprintf(
+		"%s/realms/%s/protocol/openid-connect/token",
+		serverutils.MustGetEnvVar("KEYCLOAK_BASE_URL"),
+		serverutils.MustGetEnvVar("KEYCLOAK_REALM"),
+	)
+}
 
 // resolveHAPIAuthOption selects how the HAPI FHIR client authenticates, driven by HAPI_AUTH_MODE:
 //   - "keycloak": a client-credentials bearer from a dedicated Keycloak client, validated with an
@@ -115,12 +112,6 @@ func resolveHAPIAuthOption(ctx context.Context, logger *slog.Logger) (hapifhirgo
 
 	switch mode {
 	case "keycloak":
-		hapiTokenURL := fmt.Sprintf(
-			"%s/realms/%s/protocol/openid-connect/token",
-			serverutils.MustGetEnvVar("KEYCLOAK_BASE_URL"),
-			serverutils.MustGetEnvVar("KEYCLOAK_REALM"),
-		)
-
 		// Bound every token round-trip (initial mint + background refreshes) so a slow or
 		// unreachable Keycloak can neither hang startup nor stall in-flight FHIR calls.
 		hapiTokenHTTPClient := &http.Client{Timeout: 15 * time.Second}
@@ -133,7 +124,7 @@ func resolveHAPIAuthOption(ctx context.Context, logger *slog.Logger) (hapifhirgo
 		hapiToken := (&clientcredentials.Config{
 			ClientID:     serverutils.MustGetEnvVar("HAPI_KEYCLOAK_CLIENT_ID"),
 			ClientSecret: serverutils.MustGetEnvVar("HAPI_KEYCLOAK_CLIENT_SECRET"),
-			TokenURL:     hapiTokenURL,
+			TokenURL:     keycloakTokenURL(),
 		}).TokenSource(hapiTokenCtx)
 
 		if _, err := hapiToken.Token(); err != nil {
@@ -172,20 +163,6 @@ func StartServer(
 	}
 
 	baseExtension := extensions.NewBaseExtensionImpl()
-
-	authServerConfig := authutils.Config{
-		AuthServerEndpoint: authServerEndpoint,
-		ClientID:           clientID,
-		ClientSecret:       clientSecret,
-		GrantType:          grantType,
-		Username:           username,
-		Password:           password,
-	}
-
-	authclient, err := authutils.NewClient(authServerConfig)
-	if err != nil {
-		serverutils.LogStartupError(ctx, err)
-	}
 
 	redisClient, err := initRedisClient()
 	if err != nil {
@@ -266,7 +243,29 @@ func StartServer(
 		defer natsPubSub.Close()
 	}
 
-	advantageSvc := advantage.NewServiceAdvantage(authclient)
+	// Advantage is reached with clinical's own Keycloak client. Unlike the HAPI
+	// token there is no eager mint: Advantage is optional, so a failure to reach
+	// it should surface on the call, not hold up startup.
+	advantageTokenCtx := context.WithValue(
+		context.WithoutCancel(ctx),
+		oauth2.HTTPClient,
+		&http.Client{Timeout: 15 * time.Second},
+	)
+
+	advantageToken := (&clientcredentials.Config{
+		ClientID:     serverutils.MustGetEnvVar("KEYCLOAK_CLIENT_ID"),
+		ClientSecret: serverutils.MustGetEnvVar("KEYCLOAK_CLIENT_SECRET"),
+		TokenURL:     keycloakTokenURL(),
+	}).TokenSource(advantageTokenCtx)
+
+	advantageSvc := advantage.NewServiceAdvantage(func(context.Context) (string, error) {
+		token, err := advantageToken.Token()
+		if err != nil {
+			return "", fmt.Errorf("failed to obtain advantage keycloak token: %w", err)
+		}
+
+		return token.AccessToken, nil
+	})
 
 	silURLShortnerClient, err := silurlshortener.NewURLShortener()
 	if err != nil {
@@ -307,8 +306,6 @@ func StartServer(
 
 	r := gin.Default()
 
-	memoryStore := persist.NewMemoryStore(60 * time.Minute)
-
 	config := keycloak.Config{
 		ClientID:     serverutils.MustGetEnvVar("KEYCLOAK_CLIENT_ID"),
 		ClientSecret: serverutils.MustGetEnvVar("KEYCLOAK_CLIENT_SECRET"),
@@ -324,7 +321,7 @@ func StartServer(
 		serverutils.LogStartupError(ctx, fmt.Errorf("failed to create keycloak client: %w", err))
 	}
 
-	SetupRoutes(r, logger, memoryStore, authclient, kcClient, allUsecases, infrastructure)
+	SetupRoutes(r, logger, kcClient, allUsecases, infrastructure)
 
 	addr := fmt.Sprintf(":%v", port)
 
@@ -370,8 +367,6 @@ func initializeLogger() *slog.Logger {
 func SetupRoutes(
 	r *gin.Engine,
 	log *slog.Logger,
-	cacheStore persist.CacheStore,
-	authclient auth.OAuthClientService,
 	keycloakClient *keycloak.Client,
 	allUsecases *usecases.Usecases,
 	infra infrastructure.Infrastructure,
@@ -432,7 +427,7 @@ func SetupRoutes(
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	graphQL := r.Group("/graphql")
-	graphQL.Use(rest.AuthenticationGinMiddleware(cacheStore, authclient, keycloakClient))
+	graphQL.Use(rest.AuthenticationGinMiddleware(keycloakClient))
 	graphQL.Use(rest.TenantIdentifierExtractionMiddleware(infra.FHIR))
 	graphQL.Any("", GQLHandler(allUsecases))
 
@@ -451,7 +446,7 @@ func SetupRoutes(
 		questionnaireGroup.POST("", handlers.Assessment)
 	}
 
-	apis.Use(rest.AuthenticationGinMiddleware(cacheStore, authclient, keycloakClient))
+	apis.Use(rest.AuthenticationGinMiddleware(keycloakClient))
 	apis.Use(silgotel.GinRequestMetrics("clinical-service-backend"))
 
 	v1 := apis.Group("/v1")

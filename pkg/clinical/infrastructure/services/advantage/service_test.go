@@ -7,14 +7,12 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit"
-	"github.com/savannahghi/authutils"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/application/dto"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/advantage"
-	authMock "github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/authutils/mock"
 )
 
 type mockHandler struct {
-	auth *authMock.MockOAuthClientService
+	token advantage.TokenProvider
 }
 
 func TestServiceAdvantageImpl_PatientSegmentation(t *testing.T) {
@@ -30,12 +28,9 @@ func TestServiceAdvantageImpl_PatientSegmentation(t *testing.T) {
 		{
 			name: "Happy case: segment patients",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return &authutils.OAUTHResponse{
-							AccessToken: gofakeit.UUID(),
-						}, nil
-					})
+				mh.token = func(context.Context) (string, error) {
+					return gofakeit.UUID(), nil
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -50,10 +45,9 @@ func TestServiceAdvantageImpl_PatientSegmentation(t *testing.T) {
 		{
 			name: "Sad case: unable to segment patients",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return nil, fmt.Errorf("an error occurred")
-					})
+				mh.token = func(context.Context) (string, error) {
+					return "", fmt.Errorf("an error occurred")
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -68,10 +62,10 @@ func TestServiceAdvantageImpl_PatientSegmentation(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fakeAuth := authMock.NewMockOAuthClientService(t)
-			s := advantage.NewServiceAdvantage(fakeAuth)
+			mh := &mockHandler{}
+			args := tt.setup(mh)
 
-			args := tt.setup(&mockHandler{auth: fakeAuth})
+			s := advantage.NewServiceAdvantage(mh.token)
 
 			if err := s.SegmentPatient(args.ctx, args.payload); (err != nil) != tt.wantErr {
 				t.Errorf("ServiceAdvantageImpl.SegmentPatient() error = %v, wantErr %v", err, tt.wantErr)
@@ -95,12 +89,9 @@ func TestServiceAdvantageImpl_SendSMS(t *testing.T) {
 		{
 			name: "Happy case: send SMS",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return &authutils.OAUTHResponse{
-							AccessToken: gofakeit.UUID(),
-						}, nil
-					})
+				mh.token = func(context.Context) (string, error) {
+					return gofakeit.UUID(), nil
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -118,10 +109,9 @@ func TestServiceAdvantageImpl_SendSMS(t *testing.T) {
 		{
 			name: "Sad case: unable to send SMS",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return nil, fmt.Errorf("an error occurred")
-					})
+				mh.token = func(context.Context) (string, error) {
+					return "", fmt.Errorf("an error occurred")
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -138,10 +128,10 @@ func TestServiceAdvantageImpl_SendSMS(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fakeAuth := authMock.NewMockOAuthClientService(t)
-			s := advantage.NewServiceAdvantage(fakeAuth)
+			mh := &mockHandler{}
+			args := tt.setup(mh)
 
-			args := tt.setup(&mockHandler{auth: fakeAuth})
+			s := advantage.NewServiceAdvantage(mh.token)
 
 			if err := s.SendSMS(args.ctx, args.workstationID, args.branchID, args.payload); (err != nil) != tt.wantErr {
 				t.Errorf("ServiceAdvantageImpl.SendSMS() error = %v, wantErr %v", err, tt.wantErr)
@@ -164,12 +154,9 @@ func TestServiceAdvantageImpl_GetSchedules(t *testing.T) {
 		{
 			name: "Happy case: get schedule",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return &authutils.OAUTHResponse{
-							AccessToken: gofakeit.UUID(),
-						}, nil
-					})
+				mh.token = func(context.Context) (string, error) {
+					return gofakeit.UUID(), nil
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -187,10 +174,9 @@ func TestServiceAdvantageImpl_GetSchedules(t *testing.T) {
 		{
 			name: "Sad case: unable to get schedule",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return nil, fmt.Errorf("an error occurred")
-					})
+				mh.token = func(context.Context) (string, error) {
+					return "", fmt.Errorf("an error occurred")
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -208,10 +194,10 @@ func TestServiceAdvantageImpl_GetSchedules(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fakeAuth := authMock.NewMockOAuthClientService(t)
-			s := advantage.NewServiceAdvantage(fakeAuth)
+			mh := &mockHandler{}
+			args := tt.setup(mh)
 
-			args := tt.setup(&mockHandler{auth: fakeAuth})
+			s := advantage.NewServiceAdvantage(mh.token)
 
 			_, err := s.GetSchedules(args.ctx, args.headers)
 			if (err != nil) != tt.wantErr {
@@ -238,12 +224,9 @@ func TestServiceAdvantageImpl_GetSlots(t *testing.T) {
 		{
 			name: "Happy case: get available slots",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return &authutils.OAUTHResponse{
-							AccessToken: gofakeit.UUID(),
-						}, nil
-					})
+				mh.token = func(context.Context) (string, error) {
+					return gofakeit.UUID(), nil
+				}
 
 				return args{
 					ctx:        context.Background(),
@@ -263,10 +246,9 @@ func TestServiceAdvantageImpl_GetSlots(t *testing.T) {
 		{
 			name: "Sad case: unable to get available slots",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return nil, fmt.Errorf("an error occurred")
-					})
+				mh.token = func(context.Context) (string, error) {
+					return "", fmt.Errorf("an error occurred")
+				}
 
 				return args{
 					ctx:        context.Background(),
@@ -286,10 +268,10 @@ func TestServiceAdvantageImpl_GetSlots(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fakeAuth := authMock.NewMockOAuthClientService(t)
-			s := advantage.NewServiceAdvantage(fakeAuth)
+			mh := &mockHandler{}
+			args := tt.setup(mh)
 
-			args := tt.setup(&mockHandler{auth: fakeAuth})
+			s := advantage.NewServiceAdvantage(mh.token)
 
 			_, err := s.GetSlots(args.ctx, args.startDate, args.scheduleID, args.headers)
 			if (err != nil) != tt.wantErr {
@@ -315,12 +297,9 @@ func TestServiceAdvantageImpl_CreateCheckin(t *testing.T) {
 		{
 			name: "Happy case: create checkin successfully",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return &authutils.OAUTHResponse{
-							AccessToken: gofakeit.UUID(),
-						}, nil
-					})
+				mh.token = func(context.Context) (string, error) {
+					return gofakeit.UUID(), nil
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -344,10 +323,9 @@ func TestServiceAdvantageImpl_CreateCheckin(t *testing.T) {
 		{
 			name: "Sad case: unable to create checkin",
 			setup: func(mh *mockHandler) args {
-				mh.auth.EXPECT().Authenticate().
-					RunAndReturn(func() (*authutils.OAUTHResponse, error) {
-						return nil, fmt.Errorf("an error occurred")
-					})
+				mh.token = func(context.Context) (string, error) {
+					return "", fmt.Errorf("an error occurred")
+				}
 
 				return args{
 					ctx: context.Background(),
@@ -371,10 +349,10 @@ func TestServiceAdvantageImpl_CreateCheckin(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fakeAuth := authMock.NewMockOAuthClientService(t)
-			s := advantage.NewServiceAdvantage(fakeAuth)
+			mh := &mockHandler{}
+			args := tt.setup(mh)
 
-			args := tt.setup(&mockHandler{auth: fakeAuth})
+			s := advantage.NewServiceAdvantage(mh.token)
 
 			if err := s.CreateCheckin(args.ctx, args.checkIn, args.headers); (err != nil) != tt.wantErr {
 				t.Errorf("ServiceAdvantageImpl.CreateCheckin() error = %v, wantErr %v", err, tt.wantErr)

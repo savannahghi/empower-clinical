@@ -12,7 +12,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/savannahghi/serverutils"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/application/dto"
-	auth "github.com/savannahghi/empower-clinical/pkg/clinical/infrastructure/services/authutils"
 )
 
 var (
@@ -33,15 +32,18 @@ type AdvantageService interface {
 	CreateCheckin(ctx context.Context, checkIn *dto.Checkin, headers *dto.AdvantageHeaders) error
 }
 
+// TokenProvider issues the bearer token used to call Advantage.
+type TokenProvider func(ctx context.Context) (string, error)
+
 // ServiceAdvantageImpl represents advantage server's implementations
 type ServiceAdvantageImpl struct {
-	client auth.OAuthClientService
+	token TokenProvider
 }
 
 // NewServiceAdvantage is the advantage server's service constructor
-func NewServiceAdvantage(authUtils auth.OAuthClientService) *ServiceAdvantageImpl {
+func NewServiceAdvantage(token TokenProvider) *ServiceAdvantageImpl {
 	return &ServiceAdvantageImpl{
-		client: authUtils,
+		token: token,
 	}
 }
 
@@ -56,7 +58,7 @@ func (s *ServiceAdvantageImpl) SegmentPatient(ctx context.Context, payload dto.S
 
 	body := bytes.NewReader(payloadBytes)
 
-	req, err := s.newAuthenticatedRequest(http.MethodPost, url, body, nil)
+	req, err := s.newAuthenticatedRequest(ctx, http.MethodPost, url, body, nil)
 	if err != nil {
 		return err
 	}
@@ -87,7 +89,7 @@ func (s *ServiceAdvantageImpl) SendSMS(ctx context.Context, workstationID, branc
 		Branch:      branchID,
 	}
 
-	req, err := s.newAuthenticatedRequest(http.MethodPost, url, body, headers)
+	req, err := s.newAuthenticatedRequest(ctx, http.MethodPost, url, body, headers)
 	if err != nil {
 		return err
 	}
@@ -106,7 +108,7 @@ func (s *ServiceAdvantageImpl) SendSMS(ctx context.Context, workstationID, branc
 func (s *ServiceAdvantageImpl) GetSchedules(ctx context.Context, headers *dto.AdvantageHeaders) ([]*dto.Schedule, error) {
 	path := fmt.Sprintf("%s%s?actor=PRACTITIONER&fields=id,description,specialty,practitioner_data&page_size=1000", AdvantageBaseURL, schedulePath)
 
-	req, err := s.newAuthenticatedRequest(http.MethodGet, path, nil, headers)
+	req, err := s.newAuthenticatedRequest(ctx, http.MethodGet, path, nil, headers)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +144,7 @@ func (s *ServiceAdvantageImpl) GetSchedules(ctx context.Context, headers *dto.Ad
 func (s *ServiceAdvantageImpl) GetSlots(ctx context.Context, startDate string, scheduleID string, headers *dto.AdvantageHeaders) ([]*dto.Slot, error) {
 	url := fmt.Sprintf("%s%s?start=%s&fields=id,start,end&schedule_id=%s&ordering=start&status=FREE", AdvantageBaseURL, slotsPath, startDate, scheduleID)
 
-	req, err := s.newAuthenticatedRequest(http.MethodGet, url, nil, headers)
+	req, err := s.newAuthenticatedRequest(ctx, http.MethodGet, url, nil, headers)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +188,7 @@ func (s *ServiceAdvantageImpl) CreateCheckin(ctx context.Context, checkIn *dto.C
 
 	body := bytes.NewReader(payloadBytes)
 
-	req, err := s.newAuthenticatedRequest(http.MethodPost, url, body, headers)
+	req, err := s.newAuthenticatedRequest(ctx, http.MethodPost, url, body, headers)
 	if err != nil {
 		return err
 	}
@@ -219,19 +221,19 @@ func (s *ServiceAdvantageImpl) makeRequest(req *http.Request) (*http.Response, e
 }
 
 // newAuthenticatedRequest creates a new HTTP request, attaches authentication token and other necessary headers.
-func (s *ServiceAdvantageImpl) newAuthenticatedRequest(method, url string, body io.Reader, headers *dto.AdvantageHeaders) (*http.Request, error) {
+func (s *ServiceAdvantageImpl) newAuthenticatedRequest(ctx context.Context, method, url string, body io.Reader, headers *dto.AdvantageHeaders) (*http.Request, error) {
 	var request *http.Request
 
 	var err error
 
 	switch method {
 	case http.MethodPost:
-		request, err = http.NewRequest(http.MethodPost, url, body)
+		request, err = http.NewRequestWithContext(ctx, http.MethodPost, url, body)
 		if err != nil {
 			return nil, err
 		}
 	case http.MethodGet:
-		request, err = http.NewRequest(http.MethodGet, url, nil)
+		request, err = http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -239,14 +241,14 @@ func (s *ServiceAdvantageImpl) newAuthenticatedRequest(method, url string, body 
 		return nil, fmt.Errorf("unsupported method %s", method)
 	}
 
-	token, err := s.client.Authenticate()
+	token, err := s.token(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
+	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	if headers != nil {
 		request.Header.Set("X-Workstation", headers.Workstation)

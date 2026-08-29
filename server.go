@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"log"
@@ -26,7 +27,7 @@ const (
 // @query.collection.format				multi
 // @accept									application/x-www-form-urlencoded
 // @securitydefinitions.oauth2.password	OAuth2Password
-// @tokenUrl								https://accounts.staging.tiberbu.savannahghi.org/oauth2/token/
+// @tokenUrl								https://keycloak.example/realms/example/protocol/openid-connect/token
 // @scope.read								Grants read access
 // @in										header
 // @name									Authorization
@@ -65,13 +66,16 @@ func main() {
 
 	port := serverutils.MustGetEnvVar(serverutils.PortEnvVarName)
 
-	tokenURL := serverutils.MustGetEnvVar("AUTHSERVER_ENDPOINT")
+	tokenURL := fmt.Sprintf(
+		"%s/realms/%s/protocol/openid-connect/token",
+		serverutils.MustGetEnvVar("KEYCLOAK_BASE_URL"),
+		serverutils.MustGetEnvVar("KEYCLOAK_REALM"),
+	)
 
 	docs.SwaggerInfo.SwaggerTemplate = helpers.SetTokenURL(
 		docs.SwaggerInfo.SwaggerTemplate,
-		// this is the placeholder tokenUrl from API docs.
-		// this placeholder must match the one specified in the annotations
-		"https://example.staging/oauth2/token/",
+		// must match the @tokenUrl annotation above
+		"https://keycloak.example/realms/example/protocol/openid-connect/token",
 		tokenURL,
 	)
 
