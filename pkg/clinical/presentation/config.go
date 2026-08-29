@@ -220,6 +220,9 @@ func StartServer(
 	hapiFHIR, err := hapifhirgo.NewClient(
 		serverutils.MustGetEnvVar("HAPI_FHIR_BASE_URL"),
 		hapiAuthOption,
+		// The library sends JSON Patch bodies with a FHIR content type, which
+		// every FHIR server rejects. Correct it in transit.
+		hapifhirgo.WithTransport(hapifhir.NewPatchContentTypeTransport(nil)),
 	)
 	if err != nil {
 		serverutils.LogStartupError(ctx, fmt.Errorf("failed to initialize hapi fhir: %w", err))
