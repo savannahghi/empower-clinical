@@ -17,14 +17,6 @@ const (
 	JaegerCollectorEndpoint = "JAEGER_COLLECTOR_ENDPOINT"
 )
 
-func init() {
-	// check if must have env variables exist
-	// expects the server to die if this not explicitly set
-	serverutils.MustGetEnvVar("CLOUD_HEALTH_PUBSUB_TOPIC")
-	serverutils.MustGetEnvVar("CLOUD_HEALTH_DATASET_ID")
-	serverutils.MustGetEnvVar("CLOUD_HEALTH_FHIRSTORE_ID")
-}
-
 // @title									Clinical Data Repository API
 // @version								1.0
 // @description							This is the clinical data repository API.

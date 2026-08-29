@@ -173,13 +173,6 @@ func StartServer(
 
 	baseExtension := extensions.NewBaseExtensionImpl()
 
-	projectID := serverutils.MustGetEnvVar(serverutils.GoogleCloudProjectIDEnvVarName)
-
-	pubSubClient, err := pubsub.NewClient(ctx, projectID)
-	if err != nil {
-		serverutils.LogStartupError(ctx, fmt.Errorf("unable to initialize pubsub client: %w", err))
-	}
-
 	authServerConfig := authutils.Config{
 		AuthServerEndpoint: authServerEndpoint,
 		ClientID:           clientID,
@@ -248,6 +241,14 @@ func StartServer(
 	)
 
 	if strings.EqualFold(os.Getenv("PUBSUB_BACKEND"), "gcp") {
+		projectID := serverutils.MustGetEnvVar(serverutils.GoogleCloudProjectIDEnvVarName)
+
+		pubSubClient, clientErr := pubsub.NewClient(ctx, projectID)
+		if clientErr != nil {
+			serverutils.LogStartupError(ctx, fmt.Errorf("unable to initialize pubsub client: %w", clientErr))
+			os.Exit(1)
+		}
+
 		pubsubSvc, err = pubsubmessaging.NewServicePubSubMessaging(ctx, pubSubClient)
 		if err != nil {
 			serverutils.LogStartupError(ctx, fmt.Errorf("failed to initialize pubsub messaging service: %w", err))

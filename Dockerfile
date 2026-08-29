@@ -41,7 +41,6 @@ WORKDIR $WORKDIR
 
 # Copy the Go binary to the production image from the builder stage.
 COPY --from=builder /app/server /server
-COPY --from=builder /app/service_account.json /app/service_account.json
 
 # Switch to non-root user
 USER $USER
