@@ -2,7 +2,6 @@ package rest
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,7 +16,6 @@ import (
 	"github.com/savannahghi/serverutils"
 
 	silgotel "github.com/savannahghi/sil-gotel"
-	"github.com/savannahghi/empower-clinical/pkg/clinical/application/common"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/application/common/helpers"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/application/dto"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/application/utils"
@@ -137,7 +135,11 @@ func NewPresentationHandlers(usecases usecases, baseExt baseExtension, advantage
 	}
 }
 
-// ReceivePubSubPushMessage receives and processes a pubsub message
+// ReceivePubSubPushMessage receives and processes a Cloud Pub/Sub push message.
+//
+// It handles only transport: verifying the Google-signed JWT and reading the
+// topic from the message attributes. Routing lives in HandlePubSubEvent, which
+// the NATS subscriber shares.
 func (p PresentationHandlersImpl) ReceivePubSubPushMessage(c *gin.Context) {
 	ctx, span := silgotel.Trace(c.Request.Context(), name, "ReceivePubSubPushMessage")
 	defer span.End()
@@ -162,277 +164,9 @@ func (p PresentationHandlersImpl) ReceivePubSubPushMessage(c *gin.Context) {
 		return
 	}
 
-	switch topicID {
-	case utils.AddPubSubNamespace(common.CreatePatientTopic, common.ClinicalServiceName):
-		var data dto.PatientPubSubMessage
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.CreatePubsubPatient(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.OrganizationTopicName, common.ClinicalServiceName):
-		var data dto.FacilityPubSubMessage
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.CreatePubsubOrganization(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.VitalsTopicName, common.ClinicalServiceName):
-		var data dto.VitalSignPubSubMessage
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.CreatePubsubVitals(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.AllergyTopicName, common.ClinicalServiceName):
-		var data dto.PatientAllergyPubSubMessage
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.CreatePubsubAllergyIntolerance(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.MedicationTopicName, common.ClinicalServiceName):
-		var data dto.MedicationPubSubMessage
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.CreatePubsubMedicationStatement(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.TenantTopicName, common.ClinicalServiceName):
-		var data dto.OrganizationInput
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.CreatePubsubTenant(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.TestResultTopicName, common.ClinicalServiceName):
-		var data dto.PatientTestResultPubSubMessage
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.CreatePubsubTestResult(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.SegmentationTopicName, common.ClinicalServiceName):
-		var data dto.SegmentationPayload
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		err = p.SegmentPatient(ctx, data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.ReferralTopicName, common.ClinicalServiceName):
-		var data dto.PatientReferralTaskPayload
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		_, err = p.CreateReferralTask(ctx, data.Meta, data.Referral)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.ReferralReportNotificationTopic, common.ClinicalServiceName):
-		// Do the whole process of notification
-		var data dto.ReferralReportNotification
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.CreateCarePlanTopic, common.ClinicalServiceName):
-		var data dto.CarePlanPayload
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		_, err = p.PatientCarePlan(ctx, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	case utils.AddPubSubNamespace(common.FollowUpTaskTopic, common.ClinicalServiceName):
-		var data domain.FHIRTaskInput
-
-		err := json.Unmarshal(message.Message.Data, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-		_, err = p.CreateTask(ctx, &data)
-		if err != nil {
-			serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
-				Err:     err,
-				Message: err.Error(),
-			}, http.StatusBadRequest)
-
-			return
-		}
-
-	default:
-		err := fmt.Errorf("unknown topic ID: %v", topicID)
-
+	// A push subscription is addressed to this service, so an unhandled topic is
+	// a misconfiguration and keeps returning 400.
+	if err := p.HandlePubSubEvent(ctx, topicID, message.Message.Data); err != nil {
 		serverutils.WriteJSONResponse(c.Writer, errorcodeutil.CustomError{
 			Err:     err,
 			Message: err.Error(),

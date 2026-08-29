@@ -237,13 +237,15 @@ func StartServer(
 
 	upload := upload.NewServiceUpload(ctx)
 
-	// Integration events are published over NATS by default, which needs no cloud
-	// account. Set PUBSUB_BACKEND=gcp to use Google Cloud Pub/Sub instead.
+	// Integration events go over NATS by default, which needs no cloud account.
+	// Set PUBSUB_BACKEND=gcp for Google Cloud Pub/Sub.
 	//
-	// Either way this is a hard failure: the events carry referral tasks, care
-	// plans, follow-ups and FHIR ID writebacks, and a referral recorded without
-	// its downstream task is worse than a referral that was refused.
-	var pubsubSvc pubsubmessaging.ServicePubsub
+	// Either backend is a hard failure: these events carry referral tasks, care
+	// plans, follow-ups and FHIR ID writebacks.
+	var (
+		pubsubSvc  pubsubmessaging.ServicePubsub
+		natsPubSub *pubsubmessaging.NATSPubSub
+	)
 
 	if strings.EqualFold(os.Getenv("PUBSUB_BACKEND"), "gcp") {
 		pubsubSvc, err = pubsubmessaging.NewServicePubSubMessaging(ctx, pubSubClient)
@@ -252,11 +254,15 @@ func StartServer(
 			os.Exit(1)
 		}
 	} else {
-		pubsubSvc, err = pubsubmessaging.NewNATSPubSub(os.Getenv("NATS_URL"), "")
+		natsPubSub, err = pubsubmessaging.NewNATSPubSub(ctx, os.Getenv("NATS_URL"), "")
 		if err != nil {
 			serverutils.LogStartupError(ctx, fmt.Errorf("failed to initialize NATS messaging: %w", err))
 			os.Exit(1)
 		}
+
+		pubsubSvc = natsPubSub
+
+		defer natsPubSub.Close()
 	}
 
 	advantageSvc := advantage.NewServiceAdvantage(authclient)
@@ -281,6 +287,21 @@ func StartServer(
 	allUsecases, err := usecases.NewUsecasesImpl(*foundation, *base, specialized, *clinical)
 	if err != nil {
 		serverutils.LogStartupError(ctx, err)
+	}
+
+	// Five of the topics published above are consumed by this service. On Cloud
+	// Pub/Sub they return as a push to /pubsub; over NATS nothing delivers them
+	// unless the service subscribes.
+	if natsPubSub != nil {
+		handlers := rest.NewPresentationHandlers(allUsecases, baseExtension, advantageSvc)
+
+		subscriber, err := natsPubSub.Subscribe(ctx, handlers.HandlePubSubEvent)
+		if err != nil {
+			serverutils.LogStartupError(ctx, fmt.Errorf("failed to subscribe to clinical events: %w", err))
+			os.Exit(1)
+		}
+
+		defer subscriber.Stop()
 	}
 
 	r := gin.Default()

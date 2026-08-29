@@ -7,30 +7,43 @@ import (
 	"time"
 
 	"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/jetstream"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/application/common"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/application/dto"
+	"github.com/savannahghi/empower-clinical/pkg/clinical/application/utils"
 	"github.com/savannahghi/empower-clinical/pkg/clinical/domain"
 )
 
-// NATSPubSub publishes clinical integration events over NATS.
+const (
+	// StreamName holds every event published by this service.
+	StreamName = "CLINICAL"
+
+	// streamMaxAge bounds retention of unconsumed events.
+	streamMaxAge = 72 * time.Hour
+
+	// HeaderTopicID carries the namespaced topic identifier, mirroring the
+	// topicID attribute on a Cloud Pub/Sub message.
+	HeaderTopicID = "Topic-ID"
+)
+
+// NATSPubSub publishes clinical integration events over NATS JetStream, so the
+// service can run without Google Cloud.
 //
-// It exists so the service can emit its events without Google Cloud. The topic
-// names are already dot-delimited and map directly onto NATS subjects, prefixed
-// by the publishing service: patient.referral.task.create becomes
-// clinical.patient.referral.task.create.
+// Topic names map onto subjects prefixed by the publishing service:
+// patient.referral.task.create becomes clinical.patient.referral.task.create.
 //
-// Note that NATS core delivers at-most-once and drops a message when nothing is
-// subscribed. That is the right behaviour here — these events are consumed by
-// services outside this release, so an operator who has no subscriber sees
-// successful publishes and no queue growth. An operator who needs delivery
-// guarantees should subscribe, or move this to JetStream.
+// JetStream rather than core NATS because five of these topics are consumed by
+// this same service and carry clinical work. Core NATS drops a message when no
+// subscriber is connected.
 type NATSPubSub struct {
 	conn   *nats.Conn
+	js     jetstream.JetStream
 	prefix string
 }
 
-// NewNATSPubSub connects to NATS and returns a publisher.
-func NewNATSPubSub(url, prefix string) (*NATSPubSub, error) {
+// NewNATSPubSub connects to NATS, creates the stream if absent and returns a
+// publisher.
+func NewNATSPubSub(ctx context.Context, url, prefix string) (*NATSPubSub, error) {
 	if url == "" {
 		url = nats.DefaultURL
 	}
@@ -49,31 +62,60 @@ func NewNATSPubSub(url, prefix string) (*NATSPubSub, error) {
 		return nil, fmt.Errorf("unable to connect to NATS at %q: %w", url, err)
 	}
 
-	return &NATSPubSub{conn: conn, prefix: prefix}, nil
+	js, err := jetstream.New(conn)
+	if err != nil {
+		conn.Close()
+
+		return nil, fmt.Errorf("unable to initialise JetStream: %w", err)
+	}
+
+	// Created here so a fresh checkout runs with nothing but docker compose up.
+	_, err = js.CreateOrUpdateStream(ctx, jetstream.StreamConfig{
+		Name:        StreamName,
+		Description: "Integration events published by the clinical service",
+		Subjects:    []string{prefix + ".>"},
+		Storage:     jetstream.FileStorage,
+		Retention:   jetstream.LimitsPolicy,
+		MaxAge:      streamMaxAge,
+	})
+	if err != nil {
+		conn.Close()
+
+		return nil, fmt.Errorf("unable to create the %q stream: %w", StreamName, err)
+	}
+
+	return &NATSPubSub{conn: conn, js: js, prefix: prefix}, nil
 }
 
 // publish marshals the payload and sends it to the subject for this topic.
-func (n *NATSPubSub) publish(_ context.Context, data interface{}, topic string) error {
+func (n *NATSPubSub) publish(ctx context.Context, data interface{}, topic string) error {
 	payload, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("unable to marshal data for %q: %w", topic, err)
 	}
 
-	subject := fmt.Sprintf("%s.%s", n.prefix, topic)
-
-	if err := n.conn.Publish(subject, payload); err != nil {
-		return fmt.Errorf("unable to publish to %q: %w", subject, err)
+	msg := &nats.Msg{
+		Subject: fmt.Sprintf("%s.%s", n.prefix, topic),
+		Data:    payload,
+		Header:  nats.Header{},
 	}
 
-	// Publishing is asynchronous; flush so a caller that gets no error can rely
-	// on the message having reached the server.
-	return n.conn.FlushTimeout(5 * time.Second)
+	msg.Header.Set(HeaderTopicID, utils.AddPubSubNamespace(topic, common.ClinicalServiceName))
+
+	// PublishMsg returns once the server has persisted the message.
+	if _, err := n.js.PublishMsg(ctx, msg); err != nil {
+		return fmt.Errorf("unable to publish to %q: %w", msg.Subject, err)
+	}
+
+	return nil
 }
 
-// Close releases the connection.
+// Close drains the connection so in-flight messages are delivered.
 func (n *NATSPubSub) Close() {
 	if n.conn != nil {
-		n.conn.Close()
+		if err := n.conn.Drain(); err != nil {
+			n.conn.Close()
+		}
 	}
 }
 
