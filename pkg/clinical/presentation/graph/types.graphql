@@ -1,0 +1,775 @@
+type Allergy {
+  id: ID
+  code: String!
+  name: String
+  system: String
+  terminologySource: TerminologySource
+  encounterID: String!
+  reaction: Reaction
+}
+
+type Reaction {
+  code: String
+  name: String
+  system: String
+  severity: AllergyIntoleranceReactionSeverityEnum
+}
+
+type Observation {
+  id: String!
+  status: ObservationStatus!
+  patientID: String!
+  encounterID: String!
+  name: String!
+  value: String!
+  timeRecorded: String!
+  interpretation: [String!]
+  category: String
+  note: String
+  usageContext: ScreeningTypeEnum
+  serviceRequestID: ID
+}
+
+type Medication {
+  name: String!
+  code: String!
+}
+
+type MedicationStatement {
+  id: ID!
+
+  status: MedicationStatementStatusEnum
+
+  medication: Medication!
+
+  patientID: String
+}
+
+type MedicalData {
+  regimen: [MedicationStatement]
+  allergies: [Allergy]
+  weight: [Observation]
+  bmi: [Observation]
+  viralLoad: [Observation]
+  cd4Count: [Observation]
+}
+
+type TimelineResource {
+  id: ID!
+  resourceType: ResourceType
+  name: String
+  value: String
+  status: String
+  date: Date
+  timeRecorded: Time
+  category: String
+}
+
+type HealthTimeline {
+  timeline: [TimelineResource]
+  totalCount: Int!
+  pageInfo: PageInfo
+}
+
+type EpisodeOfCare {
+  id: ID!
+  status: EpisodeOfCareStatusEnum!
+  patientID: String!
+}
+
+type Encounter {
+  id: String
+  class: [EncounterClass]
+  episodeOfCareID: String
+  status: EncounterStatusEnum
+  patientID: String
+}
+
+type EncounterClass {
+	code: String
+	display: EncounterClassEnum
+}
+
+type Patient {
+  id: ID!
+  active: Boolean!
+  name: String!
+  phoneNumber: [String!]!
+  gender: Gender!
+  birthDate: Date
+}
+
+type Condition {
+  id: ID
+  status: ConditionStatus
+  name: String
+  code: String!
+  system: String!
+  category: ConditionCategory!
+  onsetDate: Date
+  recordedDate: Date
+  note: String
+
+  patientID: String
+  encounterID: String
+}
+
+type ConditionEdge {
+  node: Condition
+  cursor: String
+}
+
+type PageInfo @shareable{
+  hasNextPage: Boolean
+  startCursor: String
+
+  hasPreviousPage: Boolean
+  endCursor: String
+}
+
+type PaginationResponse {
+  hasNextPage: Boolean
+  startCursor: String
+
+  hasPreviousPage: Boolean
+  endCursor: String
+}
+
+type ConditionConnection {
+  totalCount: Int
+  edges: [ConditionEdge]
+  pageInfo: PageInfo
+}
+
+type Terminology {
+  code: String!
+  system: TerminologySource!
+  name: String!
+}
+
+type AllergyEdge {
+  node: Allergy
+  cursor: String
+}
+
+type AllergyConnection {
+  totalCount: Int
+  edges: [AllergyEdge]
+  pageInfo: PageInfo
+}
+
+type EncounterEdge {
+  node: Encounter
+  cursor: String
+}
+
+type EncounterConnection {
+  totalCount: Int
+  edges: [EncounterEdge]
+  pageInfo: PageInfo
+}
+
+type TerminologyEdge {
+  node: Terminology
+  cursor: String
+}
+
+type TerminologyConnection {
+  totalCount: Int
+  edges: [TerminologyEdge]
+  pageInfo: PageInfo
+}
+
+type ObservationEdge {
+  node: Observation
+  cursor: String
+}
+
+type ObservationConnection {
+  totalCount: Int
+  edges: [ObservationEdge]
+  pageInfo: PaginationResponse
+}
+
+type Media {
+  id: String!
+  name: String!
+  mediaLink: String!
+  contentType: String!
+  signedURL: String
+}
+
+type MediaEdge {
+  node: Media
+  cursor: String
+}
+
+type MediaConnection {
+  totalCount: Int
+  edges: [MediaEdge]
+  pageInfo: PageInfo
+}
+
+type Composition {
+  id: String!
+  text: String!
+  type: CompositionType!
+  category: CompositionCategory!
+  status: CompositionStatusEnum!
+  date: Date
+  section: [Section]
+  patientID: String
+  encounterID: String
+}
+
+type Section {
+  id: String
+  title: String
+  code: String
+  author: String
+  text: String
+  section: [Section]
+}
+
+type CompositionEdge {
+  node: Composition
+  cursor: String
+}
+
+type CompositionConnection {
+  totalCount: Int
+  edges: [CompositionEdge]
+  pageInfo: PageInfo
+}
+
+type ConsentOutput {
+  status: ConsentStatusEnum!
+}
+
+type QuestionnaireEdge {
+  node: Questionnaire
+  cursor: String
+}
+
+type QuestionnaireConnection {
+  totalCount: Int
+  edges: [QuestionnaireEdge]
+  pageInfo: PageInfo
+}
+
+type Questionnaire @key(fields: "id") {
+  id: String!
+  resourceType: String!
+  meta: Meta
+  implicitRules: String
+  language: String
+  text: Narrative
+  extension: [Extension]
+  modifierExtension: [Extension]
+  url: URI
+  identifier: [Identifier]
+  version: String
+  name: String @shareable
+  title: String
+  derivedFrom: [String]
+  status: Code
+  experimental: Boolean
+  date: DateTime
+  publisher: String
+  description: String @shareable
+  useContext: UsageContext
+  jurisdiction: [CodeableConcept]
+  purpose: String
+  effectivePeriod: Period
+  code: [Coding]
+  item: [QuestionnaireItem]
+}
+
+type Narrative {
+  id: String
+  status: String
+  div: XHTML
+}
+
+type Meta @shareable {
+  versionId: String!
+  source: String
+  tag: [Coding]
+  security: [Coding]
+}
+
+type Coding {
+  id: String
+  system: URI
+  version: String
+  code: Code
+  display: String
+  userSelected: Boolean
+}
+
+type UsageContext {
+  id: String
+  extension: [Extension]
+  code: Coding
+  valueCodeableConcept: CodeableConcept
+  valueQuantity: Quantity
+  valueRange: Range
+  valueReference: Reference
+}
+
+type Extension {
+  url: String
+  valueBoolean: Boolean
+  valueInteger: Int
+  valueDecimal: Float
+  valueBase64Binary: String
+  valueInstant: String
+  valueString: String
+  valueURI: String
+  valueDate: String
+  valueDateTime: String
+  valueTime: String
+  valueCode: String
+  valueOid: String
+  valueUUID: String
+  valueID: String
+  valueUnsignedInt: Int
+  valuePositiveInt: Int
+  valueMarkdown: String
+  valueAnnotation: Annotation
+  valueAttachment: Attachment
+  valueIdentifier: Identifier
+  valueCodeableConcept: CodeableConcept
+  valueCoding: Coding
+  valueQuantity: Quantity
+  valueRange: Range
+  valuePeriod: Period
+  valueRatio: Ratio
+  valueReference: Reference
+}
+
+type Annotation {
+  id: ID
+  authorReference: Reference
+  authorString: String
+  time: DateTime
+  text: Markdown
+}
+
+type Range {
+  id: String
+  low: Quantity
+  high: Quantity
+}
+
+type Ratio {
+  id: String
+  numerator: Quantity
+  denominator: Quantity
+}
+
+type QuestionnaireItem {
+  id: String
+  meta: Meta
+  extension: [Extension]
+  modifierExtension: [Extension]
+  linkId: String
+  definition: URI
+  code: [Coding]
+  prefix: String
+  text: String
+  type: Code
+  enableWhen: [QuestionnaireItemEnableWhen]
+  enableBehavior: Code
+  disabledDisplay: Code
+  required: Boolean
+  repeats: Boolean
+  readOnly: Boolean
+  maxLength: Int
+  answerValueSet: String
+  answerOption: [QuestionnaireItemAnswerOption]
+  initial: [QuestionnaireItemInitial]
+  item: [QuestionnaireItem]
+}
+
+type QuestionnaireItemEnableWhen {
+  id: String
+  extension: [Extension]
+  modifierExtension: [Extension]
+  question: String
+  operator: Code
+  answerBoolean: Boolean
+  answerDecimal: Float
+  answerInteger: Int
+  answerDate: Date
+  answerDateTime: DateTime
+  answerTime: DateTime
+  answerString: String
+  answerCoding: Coding
+  answerQuantity: Quantity
+  answerReference: Reference
+}
+
+type QuestionnaireItemAnswerOption {
+  id: String
+  extension: [Extension]
+  modifierExtension: [Extension]
+  valueInteger: Int
+  valueDate: Date
+  valueString: String
+  valueCoding: Coding
+  valueReference: Reference
+  initialSelected: Boolean
+}
+
+type QuestionnaireItemInitial {
+  id: String
+  extension: [Extension]
+  modifierExtension: [Extension]
+  valueBoolean: Boolean
+  valueDecimal: Float
+  valueInteger: Int
+  valueDate: Date
+  valueDateTime: DateTime
+  valueString: String
+  valueUri: URI
+  valueAttachment: Attachment
+  valueCoding: Coding
+  valueQuantity: Quantity
+  valueReference: Reference
+}
+
+type Attachment {
+  id: String
+  contentType: Code
+  language: Code
+  data: Base64Binary
+  url: URL
+  size: Int
+  hash: Base64Binary
+  title: String
+  creation: DateTime
+}
+
+type Reference {
+  id: String
+  reference: String
+  type: URI
+  identifier: Identifier
+  display: String
+}
+
+type Identifier {
+  id: String
+  use: String
+  type: CodeableConcept
+  system: URI
+  value: String
+  period: Period
+  assigner: Reference
+}
+
+type CodeableConcept {
+  id: String
+  coding: [Coding]
+  text: String
+}
+
+type Period {
+  id: String
+  start: DateTime
+  end: DateTime
+}
+
+type Quantity {
+  value: Float
+  comparator: QuantityComparatorEnum
+  unit: String
+  system: URI
+  code: Code
+}
+
+type QuestionnaireResponseItem {
+  linkId: String
+  text: String
+  answer: [QuestionnaireResponseItemAnswer]
+  item: [QuestionnaireResponseItem]
+}
+
+type QuestionnaireResponseItemAnswer {
+  valueBoolean: Boolean
+  valueDecimal: Float
+  valueInteger: Int
+  valueDate: String
+  valueDateTime: String
+  valueTime: String
+  valueString: String
+  valueUri: String
+  valueAttachment: Attachment
+  valueCoding: Coding
+  valueQuantity: Quantity
+  valueReference: Reference
+  item: [QuestionnaireResponseItem]
+}
+
+type QuestionnaireResponse {
+  status: QuestionnaireResponseStatusEnum!
+  authored: String!
+  item: [QuestionnaireResponseItem]
+}
+
+type DiagnosticReport {
+  id: ID!
+  status: ObservationStatus!
+  patientID: String!
+  encounterID: String!
+  issued: String!
+  result: [Observation!]
+  media: [Media!]
+  conclusion: String!
+}
+
+
+type Consent {
+	id: String!
+	status: ConsentStatusEnum
+	decision: ConsentDecisionEnum
+	patient: Reference
+  dateTime: DateTime
+  usageContext: ScreeningTypeEnum
+}
+
+type RiskAssessment {
+	id: String
+	subject: Reference
+	encounter: Reference
+	prediction: [RiskAssessmentPrediction]
+  note: [Annotation]
+  date: DateTime
+  basis: [Reference!]
+  usageContext: String
+}
+
+
+type RiskAssessmentPrediction {
+	id: String
+	outcome: CodeableConcept
+	probabilityDecimal: Float
+}
+
+type EncounterAssociatedResourceOutput {
+  riskAssessment: RiskAssessment
+  consent: Consent
+  observation: Observation
+  encounter: Encounter
+  tasks: [TaskOutput]
+}
+
+type ScreeningReport {
+	consent: [Consent]
+	riskAssessment: [RiskAssessment]
+	observation: ObservationOutput
+  referralDetails: [ReferralDetail]
+}
+
+type ObservationOutput {
+  examinations: [Observation!]
+  tests: [Observation!]
+}
+
+type ServiceRequest @key(fields: "id") {
+  id: String!
+
+	subject: Reference
+	encounter: Reference
+  note: [Annotation]
+  status: ServiceRequestStatus
+  intent: String
+  priority: String
+  receivingFacility: String
+  orderDetails: OrderDetails!
+  date: DateTime
+  results: [Observation!]
+  usageContext: ScreeningTypeEnum
+}
+
+type OrderDetails {
+	name: String
+	code: String
+}
+
+type ServiceRequestEdge {
+  node: ServiceRequest!
+  cursor: String
+}
+
+type ServiceRequestOutputConnection {
+  totalCount: Int
+  edges: [ServiceRequestEdge!]
+  pageInfo: PageInfo
+}
+
+type TaskOutput {
+  id: ID!
+  encounterID: ID!
+  task: String!
+  description: String
+  workflow: String
+  status: TaskStatus!
+  statusReason: String
+  authoredOn: DateTime
+  dueDate: DateTime
+  priority: String!
+  attachment: [AttachmentResponse!]
+  notes: Annotation
+  subject: Reference
+  lastUpdated: DateTime
+}
+
+type AttachmentResponse {
+  type: String
+  attachment: Attachment
+}
+
+type TaskEdge {
+  node: TaskOutput!
+  cursor: String
+}
+
+type TaskOutputConnection {
+  totalCount: Int
+  edges: [TaskEdge!]
+  pageInfo: PageInfo
+}
+
+type MedicationRequestConnection {
+  totalCount: Int
+  edges: [MedicationRequestEdge!]
+  pageInfo: PageInfo
+}
+
+# pageInfo will be transitioned to the defacto pagination once all the pagination work is done
+type RiskAssessmentConnection {
+  totalCount: Int
+  edges: [RiskAssessmentEdge!]
+  pageInfo: PaginationResponse 
+}
+
+type RiskAssessmentEdge {
+  node: RiskAssessment!
+  cursor: String
+}
+
+type ReferralDetail {
+  id: ID
+  referralDate: String!
+  referredFor: String
+  referredTo: String
+  referralReportLink: String
+  patientName: String
+  patientID: String
+}
+
+type ReferralDetailEdge {
+	node: ReferralDetail
+	cursor: String
+}
+
+type ReferralDetailConnection {
+	totalCount: Int
+  edges: [ReferralDetailEdge!]
+  pageInfo: PageInfo
+}
+
+type PatientReferralDetails {
+  patientName: String!
+  receivingFacility: ReceivingFacility!
+  referralReason: ReferralReason!
+  medicalHistory: MedicalHistory!
+  referralReportLink: String
+}
+
+type ReceivingFacility {
+  facilityName: String!
+  facilityCounty: String
+  facilityContact: String
+  facilityEmail: String
+}
+
+type ReferralReason {
+  reason: String
+  test: String
+  date: String
+  note: String
+}
+
+type MedicalHistory {
+  procedure: String
+  medication: String
+  tests: [Test]
+}
+
+type Test {
+  name: String!
+  results: String
+  date: String
+}
+
+type SimpleQuestionnaireResponse {
+  group: String
+  questions: [Questions!]
+}
+
+type Questions {
+  question: String!
+  answer: String!
+  childQuestions: [Questions!]
+}
+
+type QuestionnaireReviewSummary {
+  riskLevel: String!
+	questionnaireResponseID: String! 
+}
+
+type MedicationRequestOutput {
+  id: ID!
+  encounterID: String!
+  status: MedicationRequestStatus!
+  notes: [Annotation]
+  subject: Reference!
+  dosageInstructions: [DosageInstruction]
+  medication: String
+  authoredOn: DateTime
+  diagnosis: String
+  facilityName: String
+  orderedBy: String
+  priority: String
+}
+
+type MedicationRequestEdge {
+  node: MedicationRequestOutput!
+  cursor: String
+}
+
+type DosageInstruction {
+  route: ValueSetData
+  doseQuantity: Float
+  doseUnit: String
+  period: String
+  periodUnit: UnitsOfTimeEnum
+  frequency: Int
+  duration: String
+  durationUnit: UnitsOfTimeEnum
+  startDate: DateTime
+  endDate: DateTime
+  condition: String
+  patientInstruction: String
+  additionalInstruction: [String]
+  asNeeded: Boolean
+  freeTextInstruction: String
+}
+
+type ValueSetData {
+  code: String
+  display: String
+}

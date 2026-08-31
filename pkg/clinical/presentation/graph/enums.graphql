@@ -1,0 +1,220 @@
+enum EpisodeOfCareStatusEnum {
+  PLANNED
+  ACTIVE
+  FINISHED
+  CANCELLED
+}
+
+enum EncounterStatusEnum {
+  PLANNED
+  ON_HOLD
+  ENTERED_IN_ERROR
+  DISCONTINUED
+  DISCHARGED
+  UNKNOWN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum EncounterClassEnum {
+  AMBULATORY
+}
+
+enum ResourceType {
+  AllergyIntolerance
+  Observation
+  Condition
+  MedicationStatement
+  RiskAssessment
+  Task
+}
+
+enum AllergyIntoleranceReactionSeverityEnum {
+  MILD
+  MODERATE
+  SEVERE
+}
+
+enum ObservationStatus {
+  FINAL
+  CANCELLED
+}
+
+enum MedicationStatementStatusEnum {
+  ACTIVE
+  INACTIVE
+  UNKNOWN
+}
+
+enum Gender {
+  male
+  female
+  other
+  unknown
+  nonbinary
+  genderqueer
+  transgender
+  agender
+  bigender
+  twospirit
+  prefer_not_to_say
+}
+
+enum IdentifierType {
+  national_id
+  passport_number
+  alien_id
+  ccc_number
+  slade_health_id
+}
+
+enum ContactType {
+  PHONE_NUMBER
+}
+
+enum ConditionStatus {
+  ACTIVE
+  INACTIVE
+  RESOLVED
+  UNKNOWN
+  RECURRENCE
+  RELAPSE
+  REMISSSION
+}
+
+enum CompositionStatusEnum {
+  PRELIMINARY
+  FINAL
+  AMENDED
+  ENTERED_IN_ERROR
+}
+
+enum CompositionCategory {
+  ASSESSMENT_PLAN
+  HISTORY_OF_PRESENTING_ILLNESS
+  SOCIAL_HISTORY
+  FAMILY_HISTORY
+  EXAMINATION
+  PLAN_OF_CARE
+  PAST_MEDICAL_SURGERY_HISTORY
+  CHIEF_COMPLAINT 
+}
+
+enum CompositionType {
+  PROGRESS_NOTE
+}
+
+enum TerminologySource {
+  ICD10
+  CIEL
+  LOINC
+  ICD_10_WHO
+  ICD_11_WHO
+  ICHI
+}
+
+enum ConditionCategory {
+  PROBLEM_LIST_ITEM
+  ENCOUNTER_DIAGNOSIS
+}
+
+enum ConsentDecisionEnum {
+  permit
+  deny
+}
+
+enum ConsentStatusEnum {
+  active
+  inactive
+}
+
+enum QuantityComparatorEnum {
+  less_than
+  less_than_or_equal_to
+  greater_than_or_equal_to
+  greater_than
+}
+
+enum QuestionnaireResponseStatusEnum {
+  completed
+}
+
+enum ScreeningTypeEnum {
+  BREAST_CANCER_SCREENING
+  CERVICAL_CANCER_SCREENING
+  PROSTATE_CANCER_SCREENING
+}
+
+enum ReferralTypeEnum {
+  DIAGNOSTICS
+  SPECIALIST
+  TREATMENT
+}
+
+enum TaskStatus {
+  requested
+  completed
+  cancelled
+  accepted
+  ready
+  received
+}
+
+enum ServiceRequestStatus {
+  draft
+  active
+  on_hold
+  revoked
+  completed
+  entered_in_error
+  unknown
+}
+
+enum MedicationRequestStatus {
+  active
+  completed
+  cancelled
+  on_hold
+  stopped
+}
+
+enum UnitsOfTimeEnum {
+  s
+  min
+  h
+  d
+  wk
+  mo
+  a
+}
+
+enum MedicationRequestPriority {
+  routine
+  asap
+  stat
+  urgent
+}
+
+enum ObservationCategory {
+  laboratory
+  exam
+  imaging
+  vital_signs
+}
+
+enum PSAType {
+  WHOLE_BLOOD
+  PROSTATIC_SERUM_ANTIGEN
+}
+
+enum ObservationSubtype {
+  HPV_PCR_DNA
+  HPV_ONCOPROTEIN
+}
+
+enum ConditionSeverity {
+  mild
+  moderate
+  severe
+}

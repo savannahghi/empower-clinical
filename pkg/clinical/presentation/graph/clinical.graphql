@@ -1,0 +1,324 @@
+type Query {
+  patientHealthTimeline(input: HealthTimelineInput!): HealthTimeline!
+  getMedicalData(patientID: String!): MedicalData
+
+  getEpisodeOfCare(id: ID!): EpisodeOfCare
+
+  # Conditions
+  listPatientConditions(
+    patientID: ID!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ConditionConnection
+
+  # Compositions
+  listPatientCompositions(
+    patientID: ID!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): CompositionConnection
+
+  # Encounter
+  listPatientEncounters(
+    patientID: String!
+    pagination: PaginationInput!
+  ): EncounterConnection
+
+  # Observation
+  getPatientTemperatureEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientBloodPressureEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientHeightEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientRespiratoryRateEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientPulseRateEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientBMIEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientWeightEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientMuacEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientOxygenSaturationEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientViralLoad(
+    patientID: ID!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientBloodSugarEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientLastMenstrualPeriodEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientDiastolicBloodPressureEntries(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection
+
+  getPatientImmunoHistoChemistryRecords(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection!
+
+  getPatientPostCoitalBleedingRecords(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection!
+
+  listObservations(
+    patientID: String!
+    encounterID: String
+    date: Date
+    category: ObservationCategory
+    pagination: PaginationInput!
+  ): ObservationConnection!
+
+  # Allergy
+  searchAllergy(name: String!, pagination: PaginationInput!): TerminologyConnection
+  getAllergy(id: ID!): Allergy!
+  listPatientAllergies(
+    patientID: ID!
+    pagination: PaginationInput!
+  ): AllergyConnection
+
+  # Media
+  listPatientMedia(encounterID: ID!, serviceRequestID: ID!, pagination: PaginationInput!): MediaConnection
+
+  getRiskAssessment(
+    searchID: String,
+    riskAssessmentFilter: RiskAssessmentFilterInput!
+    pagination: Pagination!
+  ): RiskAssessmentConnection!
+
+  getScreeningReport(encounterID: ID!): ScreeningReport
+  
+  listTask(
+    filterInput: TaskFilterInput!,
+    pagination: PaginationInput!
+  ): TaskOutputConnection!
+
+  listMedicationRequests(
+    filterInput: MedicationRequestFilterInput!,
+    pagination: PaginationInput!
+  ): MedicationRequestConnection!
+  
+  getPatientReferralDetails(patientID: String, pagination: PaginationInput!): ReferralDetailConnection
+
+  getTaskByID(taskID: ID!): TaskOutput!
+
+  getPatientReferralDetailsByID(serviceRequestID: String!): PatientReferralDetails!
+
+  listLabOrders(
+    filterInput: ServiceRequestFilterInput,
+    pagination: PaginationInput!
+  ): ServiceRequestOutputConnection!
+
+  simpleQuestionnaireResponse(questionnaireResponseID: String!): [SimpleQuestionnaireResponse!]
+
+  getLabOrderByID(serviceRequestID: String!): ServiceRequest!
+
+  fetchMedicationRequestByID(medicationRequestID: String!): MedicationRequestOutput!
+
+  getHistoryOfPresentIllness(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection!
+
+    getPastMedicalAndSurgicalHistory(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection!
+
+    getFamilyAndSocialHistory(
+    patientID: String!
+    encounterID: String
+    date: Date
+    pagination: PaginationInput!
+  ): ObservationConnection!
+}
+
+type Mutation {
+  # EpisodeOfCare
+  createEpisodeOfCare(episodeOfCare: EpisodeOfCareInput!): EpisodeOfCare
+  patchEpisodeOfCare(
+    id: String!
+    episodeOfCare: EpisodeOfCareInput!
+  ): EpisodeOfCare!
+  endEpisodeOfCare(id: ID!): EpisodeOfCare
+
+  # Encounter
+  startEncounter(episodeID: String!): String!
+  patchEncounter(encounterID: String!, input: EncounterInput!): Encounter!
+  endEncounter(encounterID: String!): Boolean!
+
+  # Observation
+  recordTemperature(input: ObservationInput!): Observation!
+  recordHeight(input: ObservationInput!): Observation!
+  recordWeight(input: ObservationInput!): Observation!
+  recordRespiratoryRate(input: ObservationInput!): Observation!
+  recordPulseRate(input: ObservationInput!): Observation!
+  recordBloodPressure(input: ObservationInput!): Observation!
+  recordBMI(input: ObservationInput!): Observation!
+  recordViralLoad(input: ObservationInput!): Observation!
+  recordMUAC(input: ObservationInput!): Observation!
+  recordOxygenSaturation(input: ObservationInput!): Observation!
+  recordBloodSugar(input: ObservationInput!): Observation!
+  recordLastMenstrualPeriod(input: ObservationInput!): Observation!
+  recordDiastolicBloodPressure(input: ObservationInput!): Observation!
+  recordColposcopy(input: ObservationInput!): Observation!
+  # Visual Inspection with Acetic Acid
+  recordVIA(input: ObservationInput!): Observation!
+  recordImmunoHistoChemistry(input: ObservationInput!): Observation!
+  recordPostCoitalBleeding(input: ObservationInput!): Observation!
+  recordHistoryOfPresentIllness(input: ObservationInput!): Observation!
+  recordPastMedicalAndSurgicalHistory(input: ObservationInput!): Observation!
+  recordFamilyAndSocialHistory(input: ObservationInput!): Observation!
+
+  recordHPV(input: ObservationInput!): Observation!
+
+  # Patient
+  createPatient(input: PatientInput!): Patient!
+  patchPatient(id: String!, input: PatchPatientInput!): Patient!
+  deletePatient(id: String!): Boolean!
+
+  # Conditions
+  createCondition(input: ConditionInput!): Condition!
+
+  # Allergy Intolerance
+  createAllergyIntolerance(input: AllergyInput!): Allergy
+
+  # Observation
+  patchPatientHeight(id: String!, value: String!): Observation!
+  patchPatientWeight(id: String!, value: String!): Observation!
+  patchPatientBMI(id: String!, value: String!): Observation!
+  patchPatientTemperature(id: String!, value: String!): Observation!
+  patchPatientDiastolicBloodPressure(id: String!, value: String!): Observation!
+  patchPatientSystolicBloodPressure(id: String!, value: String!): Observation!
+  patchPatientRespiratoryRate(id: String!, value: String!): Observation!
+  patchPatientOxygenSaturation(id: String!, value: String!): Observation!
+  patchPatientPulseRate(id: String!, value: String!): Observation!
+  patchPatientViralLoad(id: String!, value: String!): Observation!
+  patchPatientMuac(id: String!, value: String!): Observation!
+  patchPatientLastMenstrualPeriod(id: String!, value: String!): Observation!
+  patchPatientBloodSugar(id: String!, value: String!): Observation!
+
+  # This is more general and can be used to patch any obs. The Patch APIs above this should be redacted/deprecated in R5
+  patchObservation(id: String!, value: String!): Observation!
+
+  # Consent
+  recordConsent(input: ConsentInput!): ConsentOutput!
+
+  # questionnaireResponse
+  createQuestionnaireResponse(
+    questionnaireID: String!
+    encounterID: String!
+    input: QuestionnaireResponseInput!
+  ): QuestionnaireReviewSummary!
+
+  # Diagnostic Report
+  recordMammographyResult(input: DiagnosticReportInput!): DiagnosticReport!
+  recordBiopsy(input: DiagnosticReportInput!): DiagnosticReport!
+  recordMRI(input: DiagnosticReportInput!): DiagnosticReport!
+  recordUltrasound(input: DiagnosticReportInput!): DiagnosticReport!
+  recordCBE(input: DiagnosticReportInput!): DiagnosticReport!
+
+  recordPapSmear(input: DiagnosticReportInput!): DiagnosticReport!
+  recordPSA(input: PSAInput!): DiagnosticReport!
+
+  updateTestResults(id: String!, value: String!): Observation!
+
+  getEncounterAssociatedResources(encounterID: String!): EncounterAssociatedResourceOutput!
+
+  # Referral
+  referPatient(input: ReferralInput!): ServiceRequest!
+  createReferral(input: CreateReferralInput!): ServiceRequest!
+  # Test Orders
+  createTestOrder(input: TestOrder!): ServiceRequest!
+  createLabOrderResult(input: TestOrderResult!): DiagnosticReport!
+
+  shareReferralForm(serviceRequestID: ID!, workstationID: ID!, branchID: ID!): Boolean!
+
+  endScreening(encounterID: String!): Boolean!
+  scheduleAppointment(input: ScheduleAppointmentInput, headersInput: AdvantageHeadersInput!): Boolean!
+  addTestResultsLater(taskInput: TaskInput!): TaskOutput!
+
+  updateTask(id: ID!, input: PatchTaskInput!): Boolean!
+
+  # MedicationRequest(ePrescriptions)
+  createPrescription(input: PrescriptionInput!): [MedicationRequestOutput]!
+  updateMedicationRequest(id: ID!, value: MedicationRequestStatus!): MedicationRequestOutput!
+
+  # Record test results
+  recordTestResults(input: TestResultInput!): DiagnosticReport!
+}

@@ -1,0 +1,54 @@
+# This file holds types used in other subgraphs but not used within this subgraph
+# because it leads to a federation composition failure if they are not included here
+#
+# Ref: https://www.apollographql.com/docs/federation/federated-types/sharing-types
+
+enum Country {
+  KE
+}
+
+enum FacilityIdentifierType {
+  MFL_CODE
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum Terminologies {
+  CIEL
+}
+
+input FacilityIdentifierInput {
+  type: FacilityIdentifierType!
+  value: String!
+  facilityID: String
+}
+
+input CoordinatesInput {
+  lat: String!
+  lng: String!
+}
+
+input FacilityServiceInput {
+  name: String!
+  description: String!
+  identifiers: [ServiceIdentifierInput]!
+}
+
+input BusinessHoursInput {
+  day: DayOfWeek!
+  openingTime: String!
+  closingTime: String!
+}
+
+input ServiceIdentifierInput {
+ identifierType: Terminologies!
+ identifierValue: String!
+}
